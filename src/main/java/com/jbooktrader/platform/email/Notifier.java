@@ -50,7 +50,7 @@ public class Notifier {
             Email email = new SimpleEmail();
             email.setDebug(debug);
             email.setHostName(smtpHost);
-            email.setSmtpPort(smtpPort);
+            email.setSmtpPort(587);
             email.setAuthenticator(new DefaultAuthenticator(user, password));
             email.setSSLOnConnect(true);
             email.setFrom(user);

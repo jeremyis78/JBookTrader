@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="JBookTrader" default="test" basedir="..">
+<project name="JBookTrader" default="test" basedir="./">
 
     <property name="compiler.debug" value="on"/>
     <property name="distDir" value="${basedir}/dist"/>
@@ -19,17 +19,17 @@
     </target>
 
     <target name="compile" depends="clean">
-        <javac srcdir="${basedir}/source"
+        <javac srcdir="${basedir}/src/main/java"
                includeantruntime="false"
                destdir="${distDir}"
                classpathref="libraries"
                debug="on"
-               source="1.7"/>
+               source="1.8"/>
     </target>
 
     <target name="package" depends="compile">
         <copy todir="${distDir}/resources">
-            <fileset dir="${basedir}/resources"/>
+            <fileset dir="${basedir}/src/main/resources"/>
         </copy>
         <jar destfile="${distJar}">
             <fileset dir="${distDir}"/>

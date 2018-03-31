@@ -25,6 +25,6 @@ programming in Java, JBookTrader is probably not for you.
 Before you start working with JBookTrader, please read the JBookTrader User
 Guide and the documents located in the /docs directory of the distribution.
 
-![Back Testing Screenshot](/resources/readme/backtest.png "Back Testing")
-![Charting Screenshot](/resources/readme/chart.png "Charting")
-![Optimizing Visualization](/resources/readme/chart.png "Optimizing Visualization")
+![Back Testing Screenshot](/src/main/resources/readme/backtest.png "Back Testing")
+![Charting Screenshot](/src/main/resources/readme/chart.png "Charting")
+![Optimizing Visualization](/src/main/resources/readme/chart.png "Optimizing Visualization")

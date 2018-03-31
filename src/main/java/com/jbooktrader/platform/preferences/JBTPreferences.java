@@ -24,7 +24,7 @@ public enum JBTPreferences {
 
     // Notifications
     SmtpHost("SMTP Host", "smtp.gmail.com"),
-    SmtpPort("SMTP Port", "465"),
+    SmtpPort("SMTP Port", "587"),
     SmtpUser("User", "you@gmail.com"),
     SmtpPassword("Password", "password"),
     Subject("Subject", "JBookTrader Notifications"),

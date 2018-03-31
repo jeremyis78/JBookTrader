@@ -1,1 +1,5 @@
 bin
+target/
+.idea/
+.DS_Store
+
