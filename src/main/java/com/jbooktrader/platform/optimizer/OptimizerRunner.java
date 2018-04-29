@@ -67,7 +67,7 @@ public abstract class OptimizerRunner implements Runnable {
         }
 
         try {
-            strategyConstructor = clazz.getConstructor(new Class[]{StrategyParams.class});
+            strategyConstructor = clazz.getConstructor(StrategyParams.class);
         } catch (NoSuchMethodException nsme) {
             throw new JBookTraderException("Could not find strategy constructor for " + strategy.getClass().getName());
         }

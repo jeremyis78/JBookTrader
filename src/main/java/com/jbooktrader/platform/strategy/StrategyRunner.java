@@ -20,6 +20,7 @@ public class StrategyRunner {
     private static final long HALF_SECOND = ONE_SECOND / 2;
 
     private class SnapshotHandler implements Runnable {
+        @SuppressWarnings("InfiniteLoopStatement")
         public void run() {
             NTPClock ntpClock = dispatcher.getNTPClock();
             long ntpTime;

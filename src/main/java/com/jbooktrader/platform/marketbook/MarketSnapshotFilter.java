@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jbooktrader.platform.marketbook;
 
 import com.toedter.calendar.*;
