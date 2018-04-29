@@ -3,13 +3,30 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jbooktrader</groupId>
     <artifactId>JBookTrader</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>9.0.2.${revision}</version>
 
     <properties>
+        <!-- Sane default when no revision property is passed in from the commandline -->
+        <revision>0-SNAPSHOT</revision>
         <java.source>8</java.source>
         <java.target>8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <scm>
+        <connection>scm:git:https://github.com/jeremyis78/JBookTrader.git</connection>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <!-- TODO: we should remove this or use a diff local repo. It was only to test the release strategy.
+                See https://stackoverflow.com/questions/41694218/why-add-the-maven-local-repository-as-a-distributionmanagement-in-the-pom
+            -->
+            <id>dev</id>
+            <name>Local repository</name>
+            <url>file://${user.home}/.m2/repository</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -124,6 +141,13 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.4</version>
+                <configuration>
+                    <tag>${project.artifactId}-${project.version}</tag>
+                </configuration>
             </plugin>
         </plugins>
     </build>
