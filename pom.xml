@@ -11,7 +11,7 @@
         <java.source>8</java.source>
         <java.target>8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tws.api.version>9.72.05</tws.api.version>
+        <tws.api.version>9.66</tws.api.version>
     </properties>
 
     <scm>
@@ -20,7 +20,7 @@
 
     <distributionManagement>
         <repository>
-            <!-- TODO: we should remove this or use a diff local repo. It was only to test the release strategy.
+            <!-- TODO: we should remove this or use a different local repo. It was only to test the release strategy.
                 See https://stackoverflow.com/questions/41694218/why-add-the-maven-local-repository-as-a-distributionmanagement-in-the-pom
             -->
             <id>dev</id>
