@@ -1,5 +1,6 @@
 bin
-target/
+target
+dist
+reports
 .idea/
 .DS_Store
-dist/
