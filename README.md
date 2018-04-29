@@ -28,3 +28,21 @@ Guide and the documents located in the /docs directory of the distribution.
 ![Back Testing Screenshot](/src/main/resources/readme/backtest.png "Back Testing")
 ![Charting Screenshot](/src/main/resources/readme/chart.png "Charting")
 ![Optimizing Visualization](/src/main/resources/readme/chart.png "Optimizing Visualization")
+
+Developing with JBookTrader
+  
+Development cycle
+```bash
+mvn clean compile
+```
+```bash
+./run/JBookTrader.sh
+```  
+  
+Packaged jar:
+```bash
+mvn clean package
+```  
+```bash
+java -jar target/JBookTrader-0.0.1-SNAPSHOT.jar .
+```  

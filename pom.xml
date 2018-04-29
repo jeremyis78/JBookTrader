@@ -51,7 +51,6 @@
     </dependencies>
 
     <build>
-        <defaultGoal>clean install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,6 +79,51 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <!-- build the executable fat jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <!-- Run shade goal on package phase -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <!-- add Main-Class to manifest file -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.jbooktrader.platform.startup.JBookTrader</mainClass>
+                                </transformer>
+                            </transformers>
+                            <!--finalName>${project.artifactId}-${project.version}-uber</finalName-->
+                            <!-- The following filters block avoids the following error when running the
+                                 shaded jar:
+                             Error: A JNI error has occurred, please check your installation and try again
+                             Exception in thread "main" java.lang.SecurityException: no manifest section
+                             for signature file entry
+                             org/bouncycastle/mail/smime/SMIMEEnvelopedGenerator$EnvelopedGenerator.class
+
+                             See http://www.jamesswafford.com/2012/03/11/
+                             java-lang-securityexception-no-manifest-section-for-signature-file-entry/
+                            -->
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -22,14 +22,16 @@ do
 done
 
 #echo "Classpath: $CLASSPATH"
+rm -f reports/*
 
-#rm -f reports/*
-#mkdir -p bin
-find bin           -name "*.class" | xargs rm -f
-find src/main/java -name "*.java"  | xargs javac -cp "$CLASSPATH" -d bin
+CLASSES=$(pwd)/target/classes
+if [ ! -d "$CLASSES" ]; then
+  echo "$CLASSES doesn't exist. Did you run 'mvn clean compile'?"
+  exit 1
+fi
 
 #JVM_OPTS="-XX:+AggressiveHeap"
 [ -x "$(which uname)" ] && [ "$(uname -m)" == "x86_64" ] && JVM_OPTS="$JVM_OPTS -d64"
 
-echo java -cp "$(pwd)/target/JBookTrader-0.0.1-SNAPSHOT.jar:$CLASSPATH:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
-exec java -cp "$(pwd)/target/JBookTrader-0.0.1-SNAPSHOT.jar:$CLASSPATH:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
+echo java -cp "$CLASSES:$CLASSPATH:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
+exec java -cp "$CLASSES:$CLASSPATH:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
