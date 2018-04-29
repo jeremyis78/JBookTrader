@@ -3,8 +3,11 @@
 JBookTrader is built with Java 8.  
   
 Development cycle
+NOTE: https://mvnrepository.com/artifact/com.interactivebrokers.tws/tws-api/9.72.05 
+NOTE: The latest tws api version (9.72.05) fails to compile
+
 ```bash
-mvn clean compile
+mvn clean compile -Dtws.api.version=9.66
 ```
 ```bash
 ./run/JBookTrader.sh
@@ -12,7 +15,7 @@ mvn clean compile
   
 Packaged jar:
 ```bash
-mvn clean package
+mvn clean package -Dtws.api.version=9.66
 ```  
 ```bash
 java -jar target/JBookTrader-9.0.2.0-SNAPSHOT.jar .

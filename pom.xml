@@ -11,6 +11,7 @@
         <java.source>8</java.source>
         <java.target>8</java.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <tws.api.version>9.72.05</tws.api.version>
     </properties>
 
     <scm>
@@ -31,8 +32,8 @@
     <dependencies>
         <dependency>
             <groupId>com.interactivebrokers.tws</groupId>
-            <artifactId>ibapi</artifactId>
-            <version>9.66</version>
+            <artifactId>tws-api</artifactId>
+            <version>${tws.api.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>
