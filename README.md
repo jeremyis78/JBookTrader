@@ -1,7 +1,4 @@
-# JBookTrader
-
-    This project was originally hosted at the now deprecated Google Code
-    service: https://code.google.com/p/jbooktrader/
+# JBookTrader [![Build Status](https://travis-ci.org/jeremyis78/JBookTrader.svg?branch=master)](https://travis-ci.org/jeremyis78/JBookTrader)
 
 JBookTrader is a fully automated trading system (ATS) that can trade various
 types of market securities during the trading day without user monitoring. All
