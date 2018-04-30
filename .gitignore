@@ -3,4 +3,5 @@ target
 dist
 reports
 .idea/
+*.iml
 .DS_Store
