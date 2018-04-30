@@ -1,7 +1,3 @@
 language: java
 jdk:
   - oraclejdk8
-
-before_install:
-  #https://github.com/jeremyis78/JBookTrader/issues/3
-  mvn exec:exec -Dexec.executable="maven" -Dexec.args="install:install-file -DgroupId=com.interactivebrokers.tws -DartifactId=tws-api -Dversion=9.66 -DgeneratePom=true -Dpackaging=jar -Dfile=lib/tws-api-9.66.jar"
