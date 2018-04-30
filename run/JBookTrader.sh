@@ -24,15 +24,21 @@ done
 #echo "Classpath: $CLASSPATH"
 rm -f reports/*
 
-RESOURCES=$(pwd)/jbooktrader
 CLASSES=$(pwd)/jbooktrader/target/classes
 if [ ! -d "$CLASSES" ]; then
   echo "$CLASSES doesn't exist. Did you run 'mvn clean compile'?"
   exit 1
 fi
+TWS_CLASSES=$(pwd)/tws-api/target/classes
+if [ ! -d "$TWS_CLASSES" ]; then
+  echo "$TWS_CLASSES doesn't exist. Did you run 'mvn clean compile'?"
+  exit 1
+fi
+CLASSES=${CLASSES}:${TWS_CLASSES}
 
 #JVM_OPTS="-XX:+AggressiveHeap"
 [ -x "$(which uname)" ] && [ "$(uname -m)" == "x86_64" ] && JVM_OPTS="$JVM_OPTS -d64"
+JVM_OPTS="$JVM_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
 
-echo java -cp "$CLASSES:$CLASSPATH:$RESOURCES:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
-exec java -cp "$CLASSES:$CLASSPATH:$RESOURCES:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
+echo java -cp "$CLASSES:$CLASSPATH:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
+exec java -cp "$CLASSES:$CLASSPATH:$(pwd)/lib" $JVM_OPTS com.jbooktrader.platform.startup.JBookTrader "$(pwd)" "$@"
