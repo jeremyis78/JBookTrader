@@ -15,6 +15,7 @@ import java.util.*;
  */
 public class BackTestFileReader {
     public static final int COLUMNS = 5;
+    public static final String COLUMN_HEADERS="date,time,balance,price,volume";
     private static final String LINE_SEP = System.getProperty("line.separator");
     private final BufferedReader reader;
     private final MarketSnapshotFilter filter;
@@ -124,7 +125,8 @@ public class BackTestFileReader {
         List<String> tokens = fastSplit(line);
 
         if (tokens.size() != COLUMNS) {
-            String msg = "The line should contain exactly " + COLUMNS + " comma-separated columns.";
+            String msg = "The line should contain exactly " + COLUMNS + " comma-separated " +
+                    "columns ("+COLUMN_HEADERS+"). Found " + tokens.size() + " columns";
             throw new JBookTraderException(msg);
         }
 
