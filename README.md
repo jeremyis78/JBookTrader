@@ -29,16 +29,12 @@ and the documents located in the /docs directory of the distribution.
 ![Optimizing Visualization](docs/optMap2.png "Optimizing Visualization")
 
 
-### Development
-Once you've read the user guide and docs, you can get started.
-JBookTrader can be built with Java 8. 
-And in fact, the travis CI build uses jdk8. 
-  
-Development cycle
-NOTE: https://mvnrepository.com/artifact/com.interactivebrokers.tws/tws-api/9.72.05 
-NOTE: The latest [tws api version (9.72.05) fails to compile](
-https://github.com/jeremyis78/JBookTrader/issues/2)
+### Development Cycle  
+For new development after JBookTrader-9.01 (the last official release), it 
+can now be built with java8 and mvn.
+The following assumes JDK8 and mvn are installed
 
+Using custom classpath (target/classes and lib/ directory)
 ```bash
 mvn clean compile
 ```
@@ -46,7 +42,7 @@ mvn clean compile
 ./run/JBookTrader.sh
 ```  
   
-Packaged jar:
+Using jar:
 ```bash
 mvn clean package
 ```  
@@ -54,7 +50,12 @@ mvn clean package
 ./run/JBookTraderJar.sh
 ```
 
-Release [still a work in progress](https://github.com/jeremyis78/JBookTrader/issues/4)
+NOTES
+ 1) for both run scripts, you can attach your IDE's debugger on port 5005
+ 2) If all new development used JBookTraderJar.sh there's no
+    need for the lib/ directory anymore.
+
+Release ([is still a work in progress](https://github.com/jeremyis78/JBookTrader/issues/4))
 
 ```bash
 BUILD_NUMBER=...
