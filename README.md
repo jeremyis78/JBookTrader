@@ -54,7 +54,7 @@ mvn clean package
 ./run/JBookTraderJar.sh
 ```
 
-Release [still a work in progress](../blob/master/issues/3)
+Release [still a work in progress](../master/issues/3)
 
 ```bash
 BUILD_NUMBER=...
