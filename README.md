@@ -19,8 +19,10 @@ requires a certain amount of programming knowledge and experience in Java. If
 you are not a software developer or if you don't have much experience
 programming in Java, JBookTrader is probably not for you.
 
-Before you start working with JBookTrader, please read the JBookTrader User
-Guide and the documents located in the /docs directory of the distribution.
+Before you start working with JBookTrader, please read the 
+[JBookTrader User Guide](
+https://github.com/jeremyis78/JBookTrader/tree/master/docs/UserGuide) 
+and the documents located in the /docs directory of the distribution.
 
 ![Back Testing Screenshot](docs/backtest.png "Back Testing")
 ![Charting Screenshot](docs/chart.png "Charting")
