@@ -6,7 +6,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.source>8</java.source>
         <java.target>8</java.target>
-        <tws.api.version>9.66</tws.api.version>
+        <tws.api.version>9.72.18</tws.api.version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>

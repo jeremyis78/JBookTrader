@@ -8,7 +8,7 @@
 
     <groupId>com.interactivebrokers.tws</groupId>
     <artifactId>tws-api</artifactId>
-    <version>9.66</version>
+    <version>9.72.18</version>
     <packaging>jar</packaging>
     <description>
         The sample IB API acquired from decompiling tws-api-9.66.jar.
@@ -28,6 +28,15 @@
     </description>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${java.source}</source>
+                    <target>${java.target}</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
