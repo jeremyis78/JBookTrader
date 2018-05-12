@@ -1,3 +1,5 @@
+* Include decompiled source for tws-api v9.66
+* Use mvn to build project
 
 9.01 (July 8, 2013)
 -------------------
