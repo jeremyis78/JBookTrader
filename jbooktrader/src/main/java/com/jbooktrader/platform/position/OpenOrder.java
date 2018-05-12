@@ -31,10 +31,10 @@ public class OpenOrder {
     }
 
     public void add(Execution execution) {
-        sharesFilled += execution.m_shares;
-        avgFillPrice += execution.m_price * execution.m_shares;
+        sharesFilled += execution.shares();
+        avgFillPrice += execution.price() * execution.shares();
 
-        if (sharesFilled == order.m_totalQuantity) {
+        if (sharesFilled == order.totalQuantity()) {
             avgFillPrice /= sharesFilled;
             isFilled = true;
         }

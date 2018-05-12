@@ -16,7 +16,6 @@
         <dependency>
             <groupId>com.interactivebrokers.tws</groupId>
             <artifactId>tws-api</artifactId>
-            <version>${tws.api.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-net</groupId>

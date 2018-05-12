@@ -145,7 +145,7 @@ public abstract class Strategy implements Comparable<Strategy> {
 
     protected void setStrategy(Contract contract, TradingSchedule tradingSchedule, int multiplier, Commission commission, double bidAskSpread) {
         this.contract = contract;
-        contract.m_multiplier = String.valueOf(multiplier);
+        contract.multiplier(String.valueOf(multiplier));
         this.tradingSchedule = tradingSchedule;
         performanceManager = new PerformanceManager(this, multiplier, commission);
         positionManager = new PositionManager(this);
@@ -171,9 +171,9 @@ public abstract class Strategy implements Comparable<Strategy> {
     }
 
     public String getSymbol() {
-        String symbol = contract.m_symbol;
-        if (contract.m_currency != null) {
-            symbol += "." + contract.m_currency;
+        String symbol = contract.symbol();
+        if (contract.currency() != null) {
+            symbol += "." + contract.currency();
         }
         return symbol;
     }
@@ -212,9 +212,9 @@ public abstract class Strategy implements Comparable<Strategy> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(" ").append(name).append(" [");
-        sb.append(contract.m_symbol).append("-");
-        sb.append(contract.m_secType).append("-");
-        sb.append(contract.m_exchange).append("]");
+        sb.append(contract.symbol()).append("-");
+        sb.append(contract.getSecType()).append("-");
+        sb.append(contract.exchange()).append("]");
 
         return sb.toString();
     }

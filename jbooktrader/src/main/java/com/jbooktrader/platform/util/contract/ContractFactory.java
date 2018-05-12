@@ -9,19 +9,19 @@ import com.ib.client.*;
  */
 public class ContractFactory {
 
-    public static Contract makeContract(String symbol, String securityType, String exchange, String currency) {
+    public static Contract makeContract(String symbol, Types.SecType securityType, String exchange, String currency) {
         Contract contract = new Contract();
 
-        contract.m_symbol = symbol;
-        contract.m_secType = securityType;
-        contract.m_exchange = exchange;
-        contract.m_currency = currency;
+        contract.symbol(symbol);
+        contract.secType(securityType);
+        contract.exchange(exchange);
+        contract.currency(currency);
 
         return contract;
     }
 
     public static Contract makeStockContract(String symbol, String exchange, String currency) {
-        return makeContract(symbol, "STK", exchange, currency);
+        return makeContract(symbol, Types.SecType.STK, exchange, currency);
     }
 
     public static Contract makeStockContract(String symbol, String exchange) {
@@ -29,7 +29,7 @@ public class ContractFactory {
     }
 
     public static Contract makeFutureContract(String symbol, String exchange, String currency) {
-        return makeContract(symbol, "FUT", exchange, currency);
+        return makeContract(symbol, Types.SecType.FUT, exchange, currency);
     }
 
     public static Contract makeFutureContract(String symbol, String exchange) {
@@ -37,11 +37,11 @@ public class ContractFactory {
     }
 
     public static Contract makeCashContract(String symbol, String currency) {
-        return makeContract(symbol, "CASH", "IDEALPRO", currency);
+        return makeContract(symbol, Types.SecType.CASH, "IDEALPRO", currency);
     }
 
     public static Contract makeIndexContract(String symbol, String exchange) {
-        return makeContract(symbol, "IND", exchange, null);
+        return makeContract(symbol, Types.SecType.IND, exchange, null);
     }
 
 }

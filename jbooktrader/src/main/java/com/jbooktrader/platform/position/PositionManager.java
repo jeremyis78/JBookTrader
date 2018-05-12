@@ -68,15 +68,15 @@ public class PositionManager {
 
     public synchronized void update(OpenOrder openOrder) {
         Order order = openOrder.getOrder();
-        String action = order.m_action;
+        Types.Action action = order.action();
         int sharesFilled = openOrder.getSharesFilled();
         int quantity = 0;
 
-        if (action.equals("SELL")) {
+        if (Types.Action.SELL == action) {
             quantity = -sharesFilled;
         }
 
-        if (action.equals("BUY")) {
+        if (Types.Action.BUY == action) {
             quantity = sharesFilled;
         }
 
