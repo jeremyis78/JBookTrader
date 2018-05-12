@@ -36,6 +36,7 @@ public class TraderAssistant {
     private final String faSubAccount;
     private final long maxDisconnectionTimeSeconds;
 
+    private EJavaSignal signal;
     private EClientSocket socket;
     private int nextStrategyID, tickerId, orderID, serverVersion;
     private String accountCode;// used to determine if TWS is running against real or paper trading account
@@ -91,7 +92,8 @@ public class TraderAssistant {
         if (socket == null || !socket.isConnected()) {
             eventReport.report(JBookTrader.APP_NAME, "Connecting to TWS");
 
-            socket = new EClientSocket(trader);
+            signal = new EJavaSignal();
+            socket = new EClientSocket(trader, signal);
             PreferencesHolder prefs = PreferencesHolder.getInstance();
             String host = prefs.get(Host);
             int port = prefs.getInt(Port);
@@ -141,15 +143,15 @@ public class TraderAssistant {
     }
 
     public String makeInstrument(Contract contract) {
-        String instrument = contract.m_symbol;
-        if (contract.m_currency != null) {
-            instrument += "-" + contract.m_currency;
+        String instrument = contract.symbol();
+        if (!Objects.isNull(contract.currency())) {
+            instrument += "-" + contract.currency();
         }
-        if (contract.m_exchange != null) {
-            instrument += "-" + contract.m_exchange;
+        if (!Objects.isNull(contract.exchange())) {
+            instrument += "-" + contract.exchange();
         }
-        if (contract.m_secType != null) {
-            instrument += "-" + contract.m_secType;
+        if (!Objects.isNull(contract.getSecType())) {
+            instrument += "-" + contract.getSecType();
         }
 
         return instrument;
@@ -185,7 +187,7 @@ public class TraderAssistant {
     }
 
     public void setMostLiquidContract(Contract contract) throws InterruptedException {
-        if (!contract.m_secType.equalsIgnoreCase("FUT")) {
+        if (contract.secType() != Types.SecType.FUT) {
             return;
         }
 
@@ -199,9 +201,9 @@ public class TraderAssistant {
 
         while (tickerId < lastTickerId) {
             tickerId++;
-            contract.m_expiry = dateFormat.format(calendar.getTime());
-            expirations.put(tickerId, contract.m_expiry);
-            socket.reqMktData(tickerId, contract, "", true);
+            contract.lastTradeDateOrContractMonth(dateFormat.format(calendar.getTime()));
+            expirations.put(tickerId, contract.lastTradeDateOrContractMonth());
+            socket.reqMktData(tickerId, contract, "", true, null);
             calendar.add(Calendar.MONTH, 1);
         }
 
@@ -223,20 +225,22 @@ public class TraderAssistant {
         }
 
         if (!isValidContract) {
-            String msg = "Contract " + contract.m_symbol + " for exchange " + contract.m_exchange + " does not exist.";
+            String msg = "Contract " + contract.symbol() + " for exchange " + contract.exchange() + " does not exist.";
             msg += " Make sure that the ticker symbol and the exchange are specified correctly.";
             eventReport.report(JBookTrader.APP_NAME, msg);
             throw new RuntimeException(msg);
         }
 
         if (mostLiquidExpiration == null) {
-            String msg = "Unable to determine the most liquid " + contract.m_symbol + " contract because no trading volume was reported. Please try again when trading resumes.";
+            String msg = "Unable to determine the most liquid " + contract.symbol()
+                    + " contract because no trading volume was reported. Please try again when trading resumes.";
             eventReport.report(JBookTrader.APP_NAME, msg);
             throw new RuntimeException(msg);
         }
 
-        contract.m_expiry = mostLiquidExpiration;
-        eventReport.report(JBookTrader.APP_NAME, "The most liquid " + contract.m_symbol + " contract was determined as " + mostLiquidExpiration + ". Volume: " + maxVolume + ".");
+        contract.lastTradeDateOrContractMonth(mostLiquidExpiration);
+        eventReport.report(JBookTrader.APP_NAME, "The most liquid " + contract.symbol()
+                + " contract was determined as " + mostLiquidExpiration + ". Volume: " + maxVolume + ".");
     }
 
     public synchronized void requestMarketData(Strategy strategy) throws InterruptedException {
@@ -246,15 +250,15 @@ public class TraderAssistant {
         Integer ticker = tickers.get(instrument);
         if (!subscribedTickers.containsKey(ticker)) {
             setMostLiquidContract(strategy.getContract());
-            subscribedTickers.put(ticker, strategy.getContract().m_expiry);
+            subscribedTickers.put(ticker, strategy.getContract().lastTradeDateOrContractMonth());
             socket.reqContractDetails(ticker, strategy.getContract());
             eventReport.report(JBookTrader.APP_NAME, "Requested contract details for instrument " + instrument);
-            socket.reqMktDepth(ticker, contract, 10);
+            socket.reqMktDepth(ticker, contract, 10, null);
             eventReport.report(JBookTrader.APP_NAME, "Requested book data for instrument " + instrument);
-            socket.reqMktData(ticker, contract, "", false);
+            socket.reqMktData(ticker, contract, "", false, null);
             eventReport.report(JBookTrader.APP_NAME, "Requested market data for instrument " + instrument);
         } else {
-            strategy.getContract().m_expiry = subscribedTickers.get(ticker);
+            strategy.getContract().lastTradeDateOrContractMonth(subscribedTickers.get(ticker));
         }
         Dispatcher.getInstance().fireModelChanged(ModelListener.Event.ExpirationUpdate, strategy);
     }
@@ -345,16 +349,18 @@ public class TraderAssistant {
 
             double midPrice = strategy.getMarketBook().getSnapshot().getPrice();
             double bidAskSpread = strategy.getBidAskSpread();
-            double expectedFillPrice = order.m_action.equalsIgnoreCase("BUY") ? (midPrice + bidAskSpread / 2) : (midPrice - bidAskSpread / 2);
+            double expectedFillPrice = order.action() == Types.Action.BUY
+                    ? (midPrice + bidAskSpread / 2)
+                    : (midPrice - bidAskSpread / 2);
             strategy.getPositionManager().setExpectedFillPrice(expectedFillPrice);
 
             if (mode == Mode.Trade || mode == Mode.ForceClose) {
                 socket.placeOrder(orderID, contract, order);
             } else {
                 Execution execution = new Execution();
-                execution.m_shares = order.m_totalQuantity;
-                execution.m_price = expectedFillPrice;
-                execution.m_orderId = orderID;
+                execution.shares(order.totalQuantity());
+                execution.price(expectedFillPrice);
+                execution.orderId(orderID);
                 trader.execDetails(0, contract, execution);
             }
         } catch (Throwable t) {
@@ -365,11 +371,11 @@ public class TraderAssistant {
 
     public void placeMarketOrder(Contract contract, int quantity, String action, Strategy strategy) {
         Order order = new Order();
-        order.m_overridePercentageConstraints = true;
-        order.m_action = action;
-        order.m_totalQuantity = quantity;
-        order.m_orderType = "MKT";
-        order.m_account = faSubAccount;
+        order.overridePercentageConstraints(true);
+        order.action(action);
+        order.totalQuantity(quantity);
+        order.orderType(OrderType.MKT);
+        order.account(faSubAccount);
         placeOrder(contract, order, strategy);
     }
 

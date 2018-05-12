@@ -95,8 +95,11 @@ public class AboutDialog extends JBTDialog {
         apiPanel.add(serverVersionLabel);
         apiPanel.add(serverVersionValueLabel);
 
+        // The client version is no longer publicly accessible and seems to be sent as the first part
+        // of the binary message when not using V100+.  See com.ib.client.EClient.sendConnectRequest()
+        // There also seems to be a bug with V100+: https://groups.io/g/twsapi/topic/4048075
         JLabel clientVersionLabel = new JLabel("Client Version:", SwingConstants.TRAILING);
-        JLabel clientVersionValueLabel = new JLabel("" + EClientSocket.CLIENT_VERSION);
+        JLabel clientVersionValueLabel = new JLabel("" + "??? 9.72.18 ???");
         clientVersionValueLabel.setForeground(Color.BLACK);
         clientVersionLabel.setLabelFor(clientVersionValueLabel);
         apiPanel.add(clientVersionLabel);

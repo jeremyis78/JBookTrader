@@ -11,18 +11,14 @@
     <version>9.72.18</version>
     <packaging>jar</packaging>
     <description>
-        The sample IB API acquired from decompiling tws-api-9.66.jar.
-        I'm only including this source so I can get the travis ci build to pass.
-
-        When LINK can be resolved we can rely on the standard mvn dependency in central:
+        The sample IB API acquired from the source of TwsApi.jar from the current
+        stable version 9.72.18. I'm only including this source so I can keep the CI build
+        passing as the only publicly available version in a mvn repo is at:
         https://mvnrepository.com/artifact/com.interactivebrokers.tws/tws-api/9.72.05
 
-        The bleeding edge of tws-api is 9.72.x and can be
+        The bleeding edge of tws-api is 9.73.x and can be
         acquired by downloading the sample code from link below and looking in
-        IBJts/source/JavaClient which contains a pom.xml mentioned
-        version=9.72.17-SNAPSHOT
-        but the IBJts/API_VersionNum.txt mentioned
-        API_Version=9.72.18
+        IBJts/source/JavaClient
         https://interactivebrokers.github.io/# (also reachable from:
         https://interactivebrokers.github.io/tws-api/introduction.html#requirements)
     </description>

@@ -69,7 +69,7 @@ public class StrategyTableModel extends TableDataModel {
     public void expirationUpdate(Strategy strategy) {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
-        row.put(Expiration, strategy.getContract().m_expiry);
+        row.put(Expiration, strategy.getContract().lastTradeDateOrContractMonth());
         updateRow(rowIndex, row);
     }
 

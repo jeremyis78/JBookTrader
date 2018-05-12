@@ -106,10 +106,10 @@ public class StrategyInformationDialog extends JBTDialog implements ModelListene
 
         JPanel securityPanel = new JPanel(new SpringLayout());
         tabbedPane.addTab("Instrument", securityPanel);
-        add(securityPanel, "Symbol", strategy.getContract().m_symbol);
-        add(securityPanel, "Security Type", strategy.getContract().m_secType);
-        add(securityPanel, "Exchange", strategy.getContract().m_exchange);
-        add(securityPanel, "Multiplier", strategy.getContract().m_multiplier);
+        add(securityPanel, "Symbol", strategy.getContract().symbol());
+        add(securityPanel, "Security Type", strategy.getContract().getSecType());
+        add(securityPanel, "Exchange", strategy.getContract().exchange());
+        add(securityPanel, "Multiplier", strategy.getContract().multiplier());
         add(securityPanel, "Commission", strategy.getPerformanceManager().getCommission().toString());
 
         bidAskLabel = new JLabel();

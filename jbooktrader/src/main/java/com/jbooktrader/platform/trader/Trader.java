@@ -58,7 +58,7 @@ public class Trader extends EWrapperAdapter {
     @Override
     public void execDetails(int reqId, Contract contract, Execution execution) {
         try {
-            int orderId = execution.m_orderId;
+            int orderId = execution.orderId();
             Map<Integer, OpenOrder> openOrders = traderAssistant.getOpenOrders();
             OpenOrder openOrder = openOrders.get(orderId);
             if (openOrder != null) {
@@ -104,21 +104,21 @@ public class Trader extends EWrapperAdapter {
         String lineSep = "<br>";
         StringBuilder details = new StringBuilder("Contract details:").append(lineSep);
         details.append("ID: ").append(id).append(lineSep);
-        details.append("Trading class: ").append(cd.m_tradingClass).append(lineSep);
-        details.append("Exchanges: ").append(cd.m_validExchanges).append(lineSep);
-        details.append("Long name: ").append(cd.m_longName).append(lineSep);
-        details.append("Market name: ").append(cd.m_marketName).append(lineSep);
-        details.append("Minimum tick: ").append(cd.m_minTick).append(lineSep);
-        details.append("Contract month: ").append(cd.m_contractMonth).append(lineSep);
-        details.append("Time zone id: ").append(cd.m_timeZoneId).append(lineSep);
-        details.append("Trading hours: ").append(cd.m_tradingHours).append(lineSep);
-        details.append("Liquid hours: ").append(cd.m_liquidHours).append(lineSep);
+        details.append("Trading class: ").append(cd.contract().tradingClass()).append(lineSep);
+        details.append("Exchanges: ").append(cd.validExchanges()).append(lineSep);
+        details.append("Long name: ").append(cd.longName()).append(lineSep);
+        details.append("Market name: ").append(cd.marketName()).append(lineSep);
+        details.append("Minimum tick: ").append(cd.minTick()).append(lineSep);
+        details.append("Contract month: ").append(cd.contractMonth()).append(lineSep);
+        details.append("Time zone id: ").append(cd.timeZoneId()).append(lineSep);
+        details.append("Trading hours: ").append(cd.tradingHours()).append(lineSep);
+        details.append("Liquid hours: ").append(cd.liquidHours()).append(lineSep);
 
-        if (cd.m_liquidHours.contains("closed") || cd.m_liquidHours.contains("CLOSED")) {
+        if (cd.liquidHours().contains("closed") || cd.liquidHours().contains("CLOSED")) {
             traderAssistant.getMarketBook(id).setExchangeOpen(false);
-            String msg = "Exchanges " + cd.m_validExchanges + " are either closed or will be closed shortly today ";
-            msg += "for ticker " + cd.m_marketName + ". JBT will continue to operate normally, ";
-            msg += "but no trades for " + cd.m_marketName + " will be placed.";
+            String msg = "Exchanges " + cd.validExchanges() + " are either closed or will be closed shortly today ";
+            msg += "for ticker " + cd.marketName() + ". JBT will continue to operate normally, ";
+            msg += "but no trades for " + cd.marketName() + " will be placed.";
             eventReport.report("IB API", msg);
         } else {
             traderAssistant.getMarketBook(id).setExchangeOpen(true);
@@ -246,7 +246,7 @@ public class Trader extends EWrapperAdapter {
     @Override
     public void tickSize(int tickerId, int tickType, int size) {
         try {
-            if (tickType == TickType.VOLUME && size != 0) {
+            if (TickType.get(tickType) == TickType.VOLUME && size != 0) {
                 traderAssistant.volumeResponse(tickerId, size);
                 MarketBook marketBook = traderAssistant.getMarketBook(tickerId);
                 if (marketBook != null) {
