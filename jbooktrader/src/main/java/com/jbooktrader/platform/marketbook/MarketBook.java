@@ -39,9 +39,8 @@ public class MarketBook {
     public void saveSnapshot(Snapshot marketSnapshot) {
         if (backTestFileWriter == null) {
             try {
-                //TODO: do we need to inject the snapshot data into the DataFile object?
-                final DataFile dataFileAdapter = new MarketSnapshotDataFileAdapter();
-                backTestFileWriter = new BackTestFileWriter(name, timeZone, dataFileAdapter);
+                final BackTestData backTestDataAdapter = new MarketSnapshotBackTestDataAdapter();
+                backTestFileWriter = new BackTestFileWriter(name, timeZone, backTestDataAdapter);
             } catch (JBookTraderException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
