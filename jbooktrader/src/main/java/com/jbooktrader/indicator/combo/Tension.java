@@ -1,6 +1,7 @@
 package com.jbooktrader.indicator.combo;
 
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 
 /**
@@ -21,7 +22,7 @@ public class Tension extends Indicator {
 
     @Override
     public void calculate() {
-        MarketSnapshot snapshot = marketBook.getSnapshot();
+        Snapshot snapshot = marketBook.getSnapshot();
 
         // balance
         double balance = snapshot.getBalance();

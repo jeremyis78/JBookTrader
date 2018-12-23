@@ -23,7 +23,8 @@ public class BackTestStrategyRunner implements Runnable {
     public void run() {
         try {
             backTestDialog.enableProgress();
-            BackTestFileReader backTestFileReader = new BackTestFileReader(backTestDialog.getFileName(), backTestDialog.getDateFilter());
+            BackTestBookFileReader backTestFileReader =
+                    new BackTestBookFileReader(backTestDialog.getFileName(), backTestDialog.getDateFilter());
             BackTester backTester = new BackTester(strategy, backTestFileReader, backTestDialog);
             backTester.execute();
         } catch (Throwable t) {

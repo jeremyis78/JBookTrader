@@ -505,10 +505,10 @@ public class OptimizerDialog extends JBTDialog implements ProgressListener {
         return PerformanceMetric.getColumn(selectedItem);
     }
 
-    public MarketSnapshotFilter getDateFilter() {
-        MarketSnapshotFilter filter = null;
+    public SnapshotFilter getDateFilter() {
+        SnapshotFilter filter = null;
         if (useDateRangeCheckBox.isSelected()) {
-            filter = new MarketSnapshotFilter(fromDateEditor, toDateEditor);
+            filter = new SnapshotFilter(fromDateEditor, toDateEditor);
         }
         return filter;
     }

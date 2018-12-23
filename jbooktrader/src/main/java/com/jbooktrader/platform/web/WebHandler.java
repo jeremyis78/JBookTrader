@@ -1,5 +1,6 @@
 package com.jbooktrader.platform.web;
 
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.performance.*;
@@ -56,7 +57,7 @@ public class WebHandler implements HttpHandler {
 
             int strategyRowCount = 0;
             for (Strategy strategy : strategies) {
-                MarketSnapshot marketSnapshot = strategy.getMarketBook().getSnapshot();
+                Snapshot marketSnapshot = strategy.getMarketBook().getSnapshot();
                 PerformanceManager pm = strategy.getPerformanceManager();
 
                 List<Object> cells = new ArrayList<>();

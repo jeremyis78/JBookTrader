@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.optimizer;
 
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.performance.*;
@@ -43,10 +44,10 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
         TradingSchedule tradingSchedule = strategies.get(0).getTradingSchedule();
         int strategiesCount = strategies.size();
 
-        List<MarketSnapshot> snapshots = optimizerRunner.getSnapshots();
+        List<Snapshot> snapshots = optimizerRunner.getSnapshots();
         long snapshotsCount = snapshots.size();
         for (int count = 0; count < snapshotsCount; count++) {
-            MarketSnapshot marketSnapshot = snapshots.get(count);
+            Snapshot marketSnapshot = snapshots.get(count);
             marketBook.setSnapshot(marketSnapshot);
             indicatorManager.updateIndicators();
             boolean isInSchedule = tradingSchedule.contains(marketSnapshot.getTime());

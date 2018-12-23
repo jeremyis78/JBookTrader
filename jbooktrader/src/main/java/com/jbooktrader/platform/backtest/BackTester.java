@@ -3,6 +3,7 @@ package com.jbooktrader.platform.backtest;
 
 import com.jbooktrader.platform.chart.*;
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.model.ModelListener.*;
@@ -18,17 +19,17 @@ import java.util.*;
  */
 public class BackTester {
     private final Strategy strategy;
-    private final BackTestFileReader backTestFileReader;
+    private final BackTestBookFileReader backTestFileReader;
     private final BackTestDialog backTestDialog;
 
-    public BackTester(Strategy strategy, BackTestFileReader backTestFileReader, BackTestDialog backTestDialog) {
+    public BackTester(Strategy strategy, BackTestBookFileReader backTestFileReader, BackTestDialog backTestDialog) {
         this.strategy = strategy;
         this.backTestFileReader = backTestFileReader;
         this.backTestDialog = backTestDialog;
     }
 
     public void execute() throws JBookTraderException {
-        List<MarketSnapshot> snapshots = backTestFileReader.load(backTestDialog);
+        List<Snapshot> snapshots = backTestFileReader.load(backTestDialog);
 
         MarketBook marketBook = strategy.getMarketBook();
         IndicatorManager indicatorManager = strategy.getIndicatorManager();
@@ -40,7 +41,7 @@ public class BackTester {
 
         long snapshotsCount = snapshots.size();
         for (int count = 0; count < snapshotsCount; count++) {
-            MarketSnapshot marketSnapshot = snapshots.get(count);
+            Snapshot marketSnapshot = snapshots.get(count);
             marketBook.setSnapshot(marketSnapshot);
             performanceChartData.update(marketSnapshot);
             indicatorManager.updateIndicators();

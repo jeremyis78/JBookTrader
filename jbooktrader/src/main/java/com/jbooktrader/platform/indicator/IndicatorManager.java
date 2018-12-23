@@ -1,5 +1,6 @@
 package com.jbooktrader.platform.indicator;
 
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 
 import java.util.*;
@@ -51,7 +52,7 @@ public class IndicatorManager {
     }
 
     public void updateIndicators() {
-        MarketSnapshot snapshot = marketBook.getSnapshot();
+        Snapshot snapshot = marketBook.getSnapshot();
         if (snapshot == null) {
             return;
         }

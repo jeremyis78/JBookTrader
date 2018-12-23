@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.chart;
 
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import org.jfree.data.time.*;
 import org.jfree.data.xy.*;
@@ -94,7 +95,7 @@ public class PerformanceChartData {
         }
     }
 
-    public void update(MarketSnapshot marketSnapshot) {
+    public void update(Snapshot marketSnapshot) {
         long frequency = barSize.getSize();
         long time = marketSnapshot.getTime();
         double price = marketSnapshot.getPrice();

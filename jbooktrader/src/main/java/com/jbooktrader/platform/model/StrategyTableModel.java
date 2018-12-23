@@ -1,5 +1,6 @@
 package com.jbooktrader.platform.model;
 
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.performance.*;
 import com.jbooktrader.platform.strategy.*;
@@ -79,7 +80,7 @@ public class StrategyTableModel extends TableDataModel {
 
         MarketBook marketBook = strategy.getMarketBook();
         if (!marketBook.isEmpty()) {
-            MarketSnapshot lastMarketSnapshot = marketBook.getSnapshot();
+            Snapshot lastMarketSnapshot = marketBook.getSnapshot();
             row.put(Price, df6.format(lastMarketSnapshot.getPrice()));
             row.put(DepthBalance, df0.format(lastMarketSnapshot.getBalance()));
         }

@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.marketbook;
 
 import com.jbooktrader.platform.backtest.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketdepth.*;
 import com.jbooktrader.platform.model.*;
 
@@ -13,7 +14,7 @@ import java.util.*;
  */
 public class MarketBook {
     private static final long GAP_SIZE = 60 * 60 * 1000;// 1 hour
-    private MarketSnapshot marketSnapshot;
+    private Snapshot marketSnapshot;
     private final MarketDepth marketDepth;
     private final String name;
     private final TimeZone timeZone;
@@ -35,10 +36,12 @@ public class MarketBook {
         return marketDepth;
     }
 
-    public void saveSnapshot(MarketSnapshot marketSnapshot) {
+    public void saveSnapshot(Snapshot marketSnapshot) {
         if (backTestFileWriter == null) {
             try {
-                backTestFileWriter = new BackTestFileWriter(name, timeZone);
+                //TODO: do we need to inject the snapshot data into the DataFile object?
+                final DataFile dataFileAdapter = new MarketSnapshotDataFileAdapter();
+                backTestFileWriter = new BackTestFileWriter(name, timeZone, dataFileAdapter);
             } catch (JBookTraderException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
@@ -50,7 +53,7 @@ public class MarketBook {
         return marketSnapshot == null;
     }
 
-    public void setSnapshot(MarketSnapshot marketSnapshot) {
+    public void setSnapshot(Snapshot marketSnapshot) {
         this.marketSnapshot = marketSnapshot;
     }
 
@@ -62,14 +65,14 @@ public class MarketBook {
         isExchangeOpen = exchangeOpen;
     }
 
-    public boolean isGapping(MarketSnapshot newMarketSnapshot) {
+    public boolean isGapping(Snapshot newMarketSnapshot) {
         if (isEmpty()) {
             return false;
         }
         return (newMarketSnapshot.getTime() - marketSnapshot.getTime() > GAP_SIZE);
     }
 
-    public MarketSnapshot getSnapshot() {
+    public Snapshot getSnapshot() {
         return marketSnapshot;
     }
 

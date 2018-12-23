@@ -7,10 +7,10 @@ import java.util.*;
 /**
  * @author Eugene Kononov
  */
-public class MarketSnapshotFilter {
+public class SnapshotFilter {
     private final long fromDate, toDate;
 
-    public MarketSnapshotFilter(JTextFieldDateEditor fromDateEditor, JTextFieldDateEditor toDateEditor) {
+    public SnapshotFilter(JTextFieldDateEditor fromDateEditor, JTextFieldDateEditor toDateEditor) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fromDateEditor.getDate());
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -36,7 +36,7 @@ public class MarketSnapshotFilter {
 
     @Override
     public String toString() {
-        return "MarketSnapshotFilter{" + "fromDate=" + fromDate + ", toDate=" + toDate + '}';
+        return "SnapshotFilter{" + "fromDate=" + fromDate + ", toDate=" + toDate + '}';
     }
 }
 

@@ -3,6 +3,7 @@ package com.jbooktrader.platform.strategy;
 import com.ib.client.*;
 import com.jbooktrader.platform.commission.*;
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.model.ModelListener.*;
@@ -200,7 +201,7 @@ public abstract class Strategy implements Comparable<Strategy> {
     public void process() {
         if (!marketBook.isEmpty()) {
             indicatorManager.updateIndicators();
-            MarketSnapshot marketSnapshot = marketBook.getSnapshot();
+            Snapshot marketSnapshot = marketBook.getSnapshot();
             long instant = marketSnapshot.getTime();
             processInstant(tradingSchedule.contains(instant));
             performanceManager.updatePositionValue(marketSnapshot.getPrice(), positionManager.getCurrentPosition());

@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.optimizer;
 
 import com.jbooktrader.platform.backtest.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.preferences.*;
@@ -43,7 +44,7 @@ public abstract class OptimizerRunner implements Runnable {
     private ExecutorService optimizationExecutor;
     private ResultComparator resultComparator;
     private ComputationalTimeEstimator timeEstimator;
-    private List<MarketSnapshot> snapshots;
+    private List<Snapshot> snapshots;
     private long totalSteps;
     private String totalStrategiesString;
 
@@ -108,7 +109,7 @@ public abstract class OptimizerRunner implements Runnable {
         return minTrades;
     }
 
-    public List<MarketSnapshot> getSnapshots() {
+    public List<Snapshot> getSnapshots() {
         return snapshots;
     }
 
@@ -255,7 +256,8 @@ public abstract class OptimizerRunner implements Runnable {
             optimizationResults.clear();
             optimizerDialog.setResults(optimizationResults);
             optimizerDialog.enableProgress();
-            BackTestFileReader backTestFileReader = new BackTestFileReader(optimizerDialog.getFileName(), optimizerDialog.getDateFilter());
+            BackTestBookFileReader backTestFileReader =
+                    new BackTestBookFileReader(optimizerDialog.getFileName(), optimizerDialog.getDateFilter());
             optimizerDialog.setProgress("Loading historical data file...");
             snapshots = backTestFileReader.load(optimizerDialog);
             snapshotCount = snapshots.size();
