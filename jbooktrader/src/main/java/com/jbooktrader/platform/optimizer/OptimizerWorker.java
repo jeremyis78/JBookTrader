@@ -27,14 +27,14 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
     }
 
     public List<OptimizationResult> call() throws JBookTraderException {
-        List<Strategy> strategies = new ArrayList<>();
+        List<BookStrategy> strategies = new ArrayList<>();
         List<OptimizationResult> optimizationResults = new LinkedList<>();
 
         MarketBook marketBook = new MarketBook();
         IndicatorManager indicatorManager = new IndicatorManager();
 
         for (StrategyParams params : tasks) {
-            Strategy strategy = optimizerRunner.getStrategyInstance(params);
+            BookStrategy strategy = optimizerRunner.getStrategyInstance(params);
             strategy.setMarketBook(marketBook);
             strategy.setIndicatorManager(indicatorManager);
             strategy.setIndicators();
@@ -56,7 +56,7 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
                 isInSchedule = isInSchedule && !marketBook.isGapping(snapshots.get(count + 1));
             }
 
-            for (Strategy strategy : strategies) {
+            for (BookStrategy strategy : strategies) {
                 strategy.processInstant(isInSchedule);
             }
 
@@ -72,7 +72,7 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
         if (!optimizerRunner.isCancelled()) {
             int minTrades = optimizerRunner.getMinTrades();
 
-            for (Strategy strategy : strategies) {
+            for (BookStrategy strategy : strategies) {
                 strategy.closePosition();
 
                 PerformanceManager performanceManager = strategy.getPerformanceManager();

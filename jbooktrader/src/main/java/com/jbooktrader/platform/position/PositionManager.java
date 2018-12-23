@@ -16,14 +16,14 @@ import java.util.*;
  */
 public class PositionManager {
     private final LinkedList<Position> positionsHistory;
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private final EventReport eventReport;
     private final TraderAssistant traderAssistant;
     private final PerformanceManager performanceManager;
     private int currentPosition, targetPosition;
     private double avgFillPrice, expectedFillPrice;
 
-    public PositionManager(Strategy strategy) {
+    public PositionManager(BookStrategy strategy) {
         this.strategy = strategy;
         positionsHistory = new LinkedList<>();
         eventReport = Dispatcher.getInstance().getEventReport();

@@ -23,7 +23,7 @@ import static com.jbooktrader.platform.preferences.JBTPreferences.*;
  */
 public class TraderAssistant {
     private final static int CONTRACT_MONTHS = 7;
-    private final Map<Integer, Strategy> strategies;
+    private final Map<Integer, BookStrategy> strategies;
     private final Map<Integer, OpenOrder> openOrders;
     private final Map<String, Integer> tickers;
     private final Map<Integer, Integer> volumes;
@@ -65,7 +65,7 @@ public class TraderAssistant {
         return openOrders;
     }
 
-    public Collection<Strategy> getAllStrategies() {
+    public Collection<BookStrategy> getAllStrategies() {
         return strategies.values();
     }
 
@@ -78,9 +78,9 @@ public class TraderAssistant {
     }
 
 
-    public Strategy getStrategy(String name) {
-        for (Map.Entry<Integer, Strategy> mapEntry : strategies.entrySet()) {
-            Strategy strategy = mapEntry.getValue();
+    public BookStrategy getStrategy(String name) {
+        for (Map.Entry<Integer, BookStrategy> mapEntry : strategies.entrySet()) {
+            BookStrategy strategy = mapEntry.getValue();
             if (strategy.getName().equals(name)) {
                 return strategy;
             }
@@ -126,7 +126,7 @@ public class TraderAssistant {
     }
 
     /**
-     * While TWS was disconnected from the IB server, some order executions may have occured.
+     * While TWS was disconnected from the IB server, some order executions may have occurred.
      * To detect executions, request them explicitly after the reconnection.
      */
     public void requestExecutions() {
@@ -157,7 +157,7 @@ public class TraderAssistant {
         return instrument;
     }
 
-    public synchronized MarketBook createMarketBook(Strategy strategy) {
+    public synchronized MarketBook createMarketBook(BookStrategy strategy) {
         Contract contract = strategy.getContract();
 
         String instrument = makeInstrument(contract);
@@ -243,7 +243,7 @@ public class TraderAssistant {
                 + " contract was determined as " + mostLiquidExpiration + ". Volume: " + maxVolume + ".");
     }
 
-    public synchronized void requestMarketData(Strategy strategy) throws InterruptedException {
+    public synchronized void requestMarketData(BookStrategy strategy) throws InterruptedException {
 
         Contract contract = strategy.getContract();
         String instrument = makeInstrument(contract);
@@ -263,7 +263,7 @@ public class TraderAssistant {
         Dispatcher.getInstance().fireModelChanged(ModelListener.Event.ExpirationUpdate, strategy);
     }
 
-    public synchronized void addStrategy(Strategy strategy) throws InterruptedException {
+    public synchronized void addStrategy(BookStrategy strategy) throws InterruptedException {
         try {
             Mode mode = dispatcher.getMode();
             if (mode == Mode.ForwardTest || mode == Mode.Trade) {
@@ -323,7 +323,7 @@ public class TraderAssistant {
     }
 
 
-    private synchronized void placeOrder(Contract contract, Order order, Strategy strategy) {
+    private synchronized void placeOrder(Contract contract, Order order, BookStrategy strategy) {
         try {
             if (isOrderExecutionPending) {
                 return;
@@ -369,7 +369,7 @@ public class TraderAssistant {
         }
     }
 
-    public void placeMarketOrder(Contract contract, int quantity, String action, Strategy strategy) {
+    public void placeMarketOrder(Contract contract, int quantity, String action, BookStrategy strategy) {
         Order order = new Order();
         order.overridePercentageConstraints(true);
         order.action(action);

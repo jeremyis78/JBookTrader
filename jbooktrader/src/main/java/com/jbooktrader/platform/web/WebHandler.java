@@ -1,7 +1,6 @@
 package com.jbooktrader.platform.web;
 
 import com.jbooktrader.platform.marketbar.Snapshot;
-import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.performance.*;
 import com.jbooktrader.platform.startup.*;
@@ -39,7 +38,7 @@ public class WebHandler implements HttpHandler {
 
         if (resource.equals("") || resource.equals("/")) {
             Dispatcher dispatcher = Dispatcher.getInstance();
-            List<Strategy> strategies = new ArrayList<>(dispatcher.getTrader().getAssistant().getAllStrategies());
+            List<BookStrategy> strategies = new ArrayList<>(dispatcher.getTrader().getAssistant().getAllStrategies());
             Collections.sort(strategies);
 
             response.append("<html><head><title>");
@@ -56,7 +55,7 @@ public class WebHandler implements HttpHandler {
             response.append("<tr><th>Strategy</th><th>Symbol</th><th>Price</th><th>Position</th><th>Trades</th><th>Net Profit</th></tr>");
 
             int strategyRowCount = 0;
-            for (Strategy strategy : strategies) {
+            for (BookStrategy strategy : strategies) {
                 Snapshot marketSnapshot = strategy.getMarketBook().getSnapshot();
                 PerformanceManager pm = strategy.getPerformanceManager();
 

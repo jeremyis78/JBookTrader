@@ -18,11 +18,11 @@ import java.text.*;
  * @author Eugene Kononov
  */
 public class StrategyInformationDialog extends JBTDialog implements ModelListener {
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private JLabel cumBidAskSizesLabel, bidAskLabel;
 
 
-    public StrategyInformationDialog(JFrame parent, Strategy strategy) {
+    public StrategyInformationDialog(JFrame parent, BookStrategy strategy) {
         super(parent);
         this.strategy = strategy;
         init();

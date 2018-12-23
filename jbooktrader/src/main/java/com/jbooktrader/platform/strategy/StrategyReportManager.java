@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class StrategyReportManager {
     private final List<String> strategyReportHeaders;
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private final DecimalFormat df2, df5;
     private final SimpleDateFormat dateFormat, timeFormat;
     private final List<String> strategyReportColumns;
@@ -25,7 +25,7 @@ public class StrategyReportManager {
     private final PerformanceManager performanceManager;
     private StrategyReport strategyReport;
 
-    public StrategyReportManager(Strategy strategy) {
+    public StrategyReportManager(BookStrategy strategy) {
         this.strategy = strategy;
         positionManager = strategy.getPositionManager();
         performanceManager = strategy.getPerformanceManager();

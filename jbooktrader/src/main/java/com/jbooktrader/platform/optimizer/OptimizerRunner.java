@@ -2,7 +2,6 @@ package com.jbooktrader.platform.optimizer;
 
 import com.jbooktrader.platform.backtest.*;
 import com.jbooktrader.platform.marketbar.Snapshot;
-import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.preferences.*;
 import com.jbooktrader.platform.report.*;
@@ -48,7 +47,7 @@ public abstract class OptimizerRunner implements Runnable {
     private long totalSteps;
     private String totalStrategiesString;
 
-    protected OptimizerRunner(OptimizerDialog optimizerDialog, Strategy strategy, StrategyParams params) throws JBookTraderException {
+    protected OptimizerRunner(OptimizerDialog optimizerDialog, BookStrategy strategy, StrategyParams params) throws JBookTraderException {
         this.optimizerDialog = optimizerDialog;
         strategyName = strategy.getName();
         strategyParams = params;
@@ -81,9 +80,9 @@ public abstract class OptimizerRunner implements Runnable {
         strategiesPerProcessor = PreferencesHolder.getInstance().getInt(JBTPreferences.StrategiesPerProcessor);
     }
 
-    public Strategy getStrategyInstance(StrategyParams params) throws JBookTraderException {
+    public BookStrategy getStrategyInstance(StrategyParams params) throws JBookTraderException {
         try {
-            return (Strategy) strategyConstructor.newInstance(params);
+            return (BookStrategy) strategyConstructor.newInstance(params);
         } catch (InvocationTargetException ite) {
             throw new JBookTraderException(ite.getCause());
         } catch (Exception e) {

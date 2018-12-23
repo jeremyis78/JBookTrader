@@ -11,12 +11,12 @@ import com.jbooktrader.platform.strategy.*;
 public class OpenOrder {
     private final int id;
     private final Order order;
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private int sharesFilled;
     private boolean isFilled;
     private double avgFillPrice;
 
-    public OpenOrder(int id, Order order, Strategy strategy) {
+    public OpenOrder(int id, Order order, BookStrategy strategy) {
         this.id = id;
         this.order = order;
         this.strategy = strategy;
@@ -45,7 +45,7 @@ public class OpenOrder {
         avgFillPrice = 0;
     }
 
-    public Strategy getStrategy() {
+    public BookStrategy getStrategy() {
         return strategy;
     }
 

@@ -18,11 +18,11 @@ import java.util.*;
  * @author Eugene Kononov
  */
 public class BackTester {
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private final BackTestBookFileReader backTestFileReader;
     private final BackTestDialog backTestDialog;
 
-    public BackTester(Strategy strategy, BackTestBookFileReader backTestFileReader, BackTestDialog backTestDialog) {
+    public BackTester(BookStrategy strategy, BackTestBookFileReader backTestFileReader, BackTestDialog backTestDialog) {
         this.strategy = strategy;
         this.backTestFileReader = backTestFileReader;
         this.backTestDialog = backTestDialog;

@@ -37,13 +37,13 @@ public class StrategyTableModel extends TableDataModel {
         return (String) getRow(row)[Strategy.ordinal()];
     }
 
-    public Strategy getStrategyForRow(int row) {
+    public BookStrategy getStrategyForRow(int row) {
         String name = getStrategyNameForRow(row);
         return traderAssistant.getStrategy(name);
     }
 
-    public Strategy createStrategyForRow(int row) throws JBookTraderException {
-        Strategy strategy = getStrategyForRow(row);
+    public BookStrategy createStrategyForRow(int row) throws JBookTraderException {
+        BookStrategy strategy = getStrategyForRow(row);
         if (strategy != null) {
             throw new JBookTraderException("Strategy " + strategy + " is already running.");
         }
@@ -54,7 +54,7 @@ public class StrategyTableModel extends TableDataModel {
         return strategy;
     }
 
-    private int getRowForStrategy(Strategy strategy) {
+    private int getRowForStrategy(BookStrategy strategy) {
         int selectedRow = -1;
         int rowCount = getRowCount();
         for (int row = 0; row < rowCount; row++) {
@@ -67,14 +67,14 @@ public class StrategyTableModel extends TableDataModel {
         return selectedRow;
     }
 
-    public void expirationUpdate(Strategy strategy) {
+    public void expirationUpdate(BookStrategy strategy) {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
         row.put(Expiration, strategy.getContract().lastTradeDateOrContractMonth());
         updateRow(rowIndex, row);
     }
 
-    public void update(Strategy strategy) {
+    public void update(BookStrategy strategy) {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
 
@@ -102,7 +102,7 @@ public class StrategyTableModel extends TableDataModel {
         updateRow(rowIndex, row);
     }
 
-    public void addStrategy(Strategy strategy) {
+    public void addStrategy(BookStrategy strategy) {
         Object[] row = new Object[getColumnCount()];
         row[Strategy.ordinal()] = strategy.getName();
         String symbol = strategy.getSymbol();

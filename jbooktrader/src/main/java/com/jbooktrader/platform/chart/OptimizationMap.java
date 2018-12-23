@@ -32,7 +32,7 @@ import static com.jbooktrader.platform.preferences.JBTPreferences.*;
 public class OptimizationMap {
     private final PreferencesHolder prefs;
     private final PerformanceMetric sortPerformanceMetric;
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private final JDialog parent;
     private final List<OptimizationResult> optimizationResults;
     private JFreeChart chart;
@@ -41,7 +41,7 @@ public class OptimizationMap {
     private double min, max;
     private ChartPanel chartPanel;
 
-    public OptimizationMap(JDialog parent, Strategy strategy, List<OptimizationResult> optimizationResults,
+    public OptimizationMap(JDialog parent, BookStrategy strategy, List<OptimizationResult> optimizationResults,
                            PerformanceMetric sortPerformanceMetric) {
         prefs = PreferencesHolder.getInstance();
         this.parent = parent;

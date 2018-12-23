@@ -81,10 +81,10 @@ public class MainFrameDialog extends JFrame implements ModelListener {
                 timeLabel.setText(sdf.format(value));
                 break;
             case StrategyUpdate:
-                strategyTableModel.update((Strategy) value);
+                strategyTableModel.update((BookStrategy) value);
                 break;
             case ExpirationUpdate:
-                strategyTableModel.expirationUpdate((Strategy) value);
+                strategyTableModel.expirationUpdate((BookStrategy) value);
                 break;
 
         }
@@ -170,7 +170,7 @@ public class MainFrameDialog extends JFrame implements ModelListener {
 
 
     private void populateStrategies() {
-        for (Strategy strategy : ClassFinder.getStrategies()) {
+        for (BookStrategy strategy : ClassFinder.getStrategies()) {
             strategyTableModel.addStrategy(strategy);
         }
     }

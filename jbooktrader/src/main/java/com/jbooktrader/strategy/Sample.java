@@ -11,7 +11,7 @@ import com.jbooktrader.strategy.base.*;
 /**
  *
  */
-public class Sample extends StrategyES {
+public class Sample extends BookStrategyES {
 
     // Technical indicators
     private Indicator balanceVelocityInd, priceVelocityInd;

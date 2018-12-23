@@ -17,7 +17,7 @@ import java.util.*;
 public class PerformanceManager {
     private final int multiplier;
     private final Commission commission;
-    private final Strategy strategy;
+    private final BookStrategy strategy;
     private PerformanceChartData performanceChartData;
     private int trades, profitableTrades, previousPosition;
     private double tradeCommission, totalCommission;
@@ -31,7 +31,7 @@ public class PerformanceManager {
     private long longTrades, shortTrades;
     private double maxSingleLoss;
 
-    public PerformanceManager(Strategy strategy, int multiplier, Commission commission) {
+    public PerformanceManager(BookStrategy strategy, int multiplier, Commission commission) {
         this.strategy = strategy;
         this.multiplier = multiplier;
         this.commission = commission;

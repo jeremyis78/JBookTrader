@@ -19,7 +19,7 @@ import com.jbooktrader.platform.schedule.*;
  *
  * @author Eugene Kononov
  */
-public abstract class Strategy implements Comparable<Strategy> {
+public abstract class BookStrategy implements Comparable<BookStrategy> {
     private final StrategyParams params;
     private final EventReport eventReport;
     private final Dispatcher dispatcher;
@@ -35,7 +35,7 @@ public abstract class Strategy implements Comparable<Strategy> {
     private double bidAskSpread;
     private boolean isDisabled;
 
-    protected Strategy(StrategyParams params) {
+    protected BookStrategy(StrategyParams params) {
         this.params = params;
         if (params.size() == 0) {
             setParams();
@@ -220,7 +220,7 @@ public abstract class Strategy implements Comparable<Strategy> {
         return sb.toString();
     }
 
-    public int compareTo(Strategy other) {
+    public int compareTo(BookStrategy other) {
         return name.compareTo(other.name);
     }
 

@@ -11,7 +11,7 @@ import java.util.*;
  * @author Eugene Kononov
  */
 public class StrategyRunner {
-    private final Collection<Strategy> strategies;
+    private final Collection<BookStrategy> strategies;
     private Collection<MarketBook> marketBooks;
     private final Dispatcher dispatcher;
     private static StrategyRunner instance;
@@ -43,7 +43,7 @@ public class StrategyRunner {
                                 marketBook.takeMarketSnapshot(snapshotTime);
                             }
 
-                            for (Strategy strategy : strategies) {
+                            for (BookStrategy strategy : strategies) {
                                 strategy.process();
                             }
                         }
@@ -69,7 +69,7 @@ public class StrategyRunner {
         (new Thread(new SnapshotHandler())).start();
     }
 
-    public void addListener(Strategy strategy) {
+    public void addListener(BookStrategy strategy) {
         synchronized (strategies) {
             strategies.add(strategy);
             marketBooks = dispatcher.getTrader().getAssistant().getAllMarketBooks().values();

@@ -47,7 +47,7 @@ public class OptimizerDialog extends JBTDialog implements ProgressListener {
     private TableColumn stepColumn;
 
     private ParamTableModel paramTableModel;
-    private Strategy strategy;
+    private BookStrategy strategy;
     private List<OptimizationResult> optimizationResults;
     private OptimizerRunner optimizerRunner;
 

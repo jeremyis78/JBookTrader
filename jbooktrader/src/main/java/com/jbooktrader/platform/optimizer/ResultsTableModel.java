@@ -16,7 +16,7 @@ import static com.jbooktrader.platform.optimizer.PerformanceMetric.*;
  * @author Eugene Kononov
  */
 public class ResultsTableModel extends TableDataModel {
-    public ResultsTableModel(Strategy strategy) {
+    public ResultsTableModel(BookStrategy strategy) {
         List<String> columnNames = new LinkedList<>();
         for (StrategyParam param : strategy.getParams().getAll()) {
             columnNames.add(param.getName());
