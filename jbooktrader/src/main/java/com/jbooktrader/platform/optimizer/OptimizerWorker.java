@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.optimizer;
 
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.MarketData;
 import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;

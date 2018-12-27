@@ -38,7 +38,7 @@ public class WebHandler implements HttpHandler {
 
         if (resource.equals("") || resource.equals("/")) {
             Dispatcher dispatcher = Dispatcher.getInstance();
-            List<BookStrategy> strategies = new ArrayList<>(dispatcher.getTrader().getAssistant().getAllStrategies());
+            List<BookStrategy> strategies = new ArrayList<>(dispatcher.getTrader().getAssistant().getBookStrategies());
             Collections.sort(strategies);
 
             response.append("<html><head><title>");
@@ -56,7 +56,7 @@ public class WebHandler implements HttpHandler {
 
             int strategyRowCount = 0;
             for (BookStrategy strategy : strategies) {
-                Snapshot marketSnapshot = strategy.getMarketBook().getSnapshot();
+                Snapshot marketSnapshot = strategy.getMarket().getSnapshot();
                 PerformanceManager pm = strategy.getPerformanceManager();
 
                 List<Object> cells = new ArrayList<>();

@@ -38,7 +38,7 @@ public class StrategyInformationDialog extends JBTDialog implements ModelListene
     public void modelChanged(Event event, Object value) {
         switch (event) {
             case StrategyUpdate:
-                MarketDepth marketDepth = strategy.getMarketBook().getMarketDepth();
+                MarketDepth marketDepth = strategy.getMarket().getMarketDepth();
                 cumBidAskSizesLabel.setText(marketDepth.getSizes());
                 bidAskLabel.setText(marketDepth.getTop());
                 break;

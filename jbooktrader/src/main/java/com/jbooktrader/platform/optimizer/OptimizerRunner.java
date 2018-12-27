@@ -170,16 +170,16 @@ public abstract class OptimizerRunner implements Runnable {
         optimizationReport.reportDescription("Minimum trades for strategy inclusion: " + optimizerDialog.getMinTrades());
         optimizationReport.reportDescription("Back data file: " + optimizerDialog.getFileName());
 
-        List<String> otpimizerReportHeaders = new ArrayList<>();
+        List<String> optimizerReportHeaders = new ArrayList<>();
         StrategyParams params = optimizationResults.iterator().next().getParams();
         for (StrategyParam param : params.getAll()) {
-            otpimizerReportHeaders.add(param.getName());
+            optimizerReportHeaders.add(param.getName());
         }
 
         for (PerformanceMetric performanceMetric : PerformanceMetric.values()) {
-            otpimizerReportHeaders.add(performanceMetric.getName());
+            optimizerReportHeaders.add(performanceMetric.getName());
         }
-        optimizationReport.reportHeaders(otpimizerReportHeaders);
+        optimizationReport.reportHeaders(optimizerReportHeaders);
 
         int maxIndex = Math.min(MAX_SAVED_RESULTS, optimizationResults.size());
         for (int index = 0; index < maxIndex; index++) {

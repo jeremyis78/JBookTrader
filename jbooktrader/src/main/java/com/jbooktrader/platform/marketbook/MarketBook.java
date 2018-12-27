@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.marketbook;
 
 import com.jbooktrader.platform.backtest.*;
+import com.jbooktrader.platform.marketbar.MarketData;
 import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketdepth.*;
 import com.jbooktrader.platform.model.*;
@@ -12,7 +13,7 @@ import java.util.*;
  *
  * @author Eugene Kononov
  */
-public class MarketBook {
+public class MarketBook implements MarketData {
     private static final long GAP_SIZE = 60 * 60 * 1000;// 1 hour
     private Snapshot marketSnapshot;
     private final MarketDepth marketDepth;
@@ -71,6 +72,10 @@ public class MarketBook {
         return (newMarketSnapshot.getTime() - marketSnapshot.getTime() > GAP_SIZE);
     }
 
+    /**
+     * Returns the last/most recent market snapshot.
+     * @return
+     */
     public Snapshot getSnapshot() {
         return marketSnapshot;
     }

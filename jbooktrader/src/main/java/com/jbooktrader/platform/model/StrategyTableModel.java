@@ -1,5 +1,6 @@
 package com.jbooktrader.platform.model;
 
+import com.jbooktrader.platform.marketbar.MarketData;
 import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.performance.*;
@@ -78,7 +79,7 @@ public class StrategyTableModel extends TableDataModel {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
 
-        MarketBook marketBook = strategy.getMarketBook();
+        MarketData marketBook = strategy.getMarket();
         if (!marketBook.isEmpty()) {
             Snapshot lastMarketSnapshot = marketBook.getSnapshot();
             row.put(Price, df6.format(lastMarketSnapshot.getPrice()));

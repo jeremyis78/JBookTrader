@@ -2,6 +2,7 @@ package com.jbooktrader.platform.trader;
 
 import com.ib.client.*;
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.position.*;
@@ -41,6 +42,7 @@ public class TraderAssistant {
     private int nextStrategyID, tickerId, orderID, serverVersion;
     private String accountCode;// used to determine if TWS is running against real or paper trading account
     private boolean isOrderExecutionPending;
+//    private boolean isPendingHistRequest;
     private boolean isMarketDataActive;
     private long disconnectionTime;
     private final BlockingQueue<String> queue;
@@ -65,7 +67,7 @@ public class TraderAssistant {
         return openOrders;
     }
 
-    public Collection<BookStrategy> getAllStrategies() {
+    public Collection<BookStrategy> getBookStrategies() {
         return strategies.values();
     }
 
@@ -80,9 +82,9 @@ public class TraderAssistant {
 
     public BookStrategy getStrategy(String name) {
         for (Map.Entry<Integer, BookStrategy> mapEntry : strategies.entrySet()) {
-            BookStrategy strategy = mapEntry.getValue();
+            Strategy strategy = mapEntry.getValue();
             if (strategy.getName().equals(name)) {
-                return strategy;
+                return (BookStrategy) strategy;
             }
         }
         return null;
@@ -243,28 +245,43 @@ public class TraderAssistant {
                 + " contract was determined as " + mostLiquidExpiration + ". Volume: " + maxVolume + ".");
     }
 
-    public synchronized void requestMarketData(BookStrategy strategy) throws InterruptedException {
+    public synchronized void requestMarketData(Strategy strategy) throws InterruptedException {
 
         Contract contract = strategy.getContract();
         String instrument = makeInstrument(contract);
-        Integer ticker = tickers.get(instrument);
-        if (!subscribedTickers.containsKey(ticker)) {
-            setMostLiquidContract(strategy.getContract());
-            subscribedTickers.put(ticker, strategy.getContract().lastTradeDateOrContractMonth());
-            socket.reqContractDetails(ticker, strategy.getContract());
-            eventReport.report(JBookTrader.APP_NAME, "Requested contract details for instrument " + instrument);
-            socket.reqMktDepth(ticker, contract, 10, null);
-            eventReport.report(JBookTrader.APP_NAME, "Requested book data for instrument " + instrument);
-            socket.reqMktData(ticker, contract, "", false, null);
-            eventReport.report(JBookTrader.APP_NAME, "Requested market data for instrument " + instrument);
+
+        if(strategy instanceof BookStrategy){
+            Integer ticker = tickers.get(instrument);
+            if (!subscribedTickers.containsKey(ticker)) {
+                setMostLiquidContract(strategy.getContract());
+                subscribedTickers.put(ticker, strategy.getContract().lastTradeDateOrContractMonth());
+                socket.reqContractDetails(ticker, strategy.getContract());
+                eventReport.report(JBookTrader.APP_NAME, "Requested contract details for instrument " + instrument);
+                socket.reqMktDepth(ticker, contract, 10, null);
+                eventReport.report(JBookTrader.APP_NAME, "Requested book data for instrument " + instrument);
+                socket.reqMktData(ticker, contract, "", false, null);
+                eventReport.report(JBookTrader.APP_NAME, "Requested market data (BookStrategy) for instrument " + instrument);
+            } else {
+                strategy.getContract().lastTradeDateOrContractMonth(subscribedTickers.get(ticker));
+            }
+            Dispatcher.getInstance().fireModelChanged(ModelListener.Event.ExpirationUpdate, strategy);
         } else {
-            strategy.getContract().lastTradeDateOrContractMonth(subscribedTickers.get(ticker));
+            //As long as we only request BookStrategies, we're okay but...if we use both or a mix of types of strategies....
+            //It's possible we end up subscribing to market data twice (reqMktData):
+            //   a BookStrategy trading the same instrument that a non-BookStrategy trades
+            //This will likely lead to subtle errors once we start using both types of strategies
+            //without some careful thought about what we're subscribed to and where to route returned
+            //market data (to BookStrategies or to non-BookStrategies).
+            throw new UnsupportedOperationException("non-BookStrategy reqMktData requests not yet implemented; see comments above");
         }
-        Dispatcher.getInstance().fireModelChanged(ModelListener.Event.ExpirationUpdate, strategy);
     }
 
-    public synchronized void addStrategy(BookStrategy strategy) throws InterruptedException {
+    public synchronized void addStrategy(Strategy strategy) throws InterruptedException {
         try {
+            if(!(strategy instanceof BookStrategy)){
+                throw new UnsupportedOperationException("only BookStrategies supported!");
+            }
+
             Mode mode = dispatcher.getMode();
             if (mode == Mode.ForwardTest || mode == Mode.Trade) {
                 requestMarketData(strategy);
@@ -273,12 +290,12 @@ public class TraderAssistant {
             strategy.setIndicatorManager(new IndicatorManager());
             strategy.setIndicators();
             nextStrategyID++;
-            strategies.put(nextStrategyID, strategy);
+            strategies.put(nextStrategyID, (BookStrategy) strategy);
 
             if (mode == Mode.ForwardTest || mode == Mode.Trade) {
                 String msg = "Strategy started. Trading schedule: " + strategy.getTradingSchedule();
                 eventReport.report(strategy.getName(), msg);
-                StrategyRunner.getInstance().addListener(strategy);
+                StrategyRunner.getInstance().addListener( (BookStrategy) strategy);
             }
         } catch (Exception e) {
             MessageDialog.showMessage(e.getMessage());
@@ -323,13 +340,16 @@ public class TraderAssistant {
     }
 
 
-    private synchronized void placeOrder(Contract contract, Order order, BookStrategy strategy) {
+    private synchronized void placeOrder(Contract contract, Order order, Strategy strategy) {
         try {
             if (isOrderExecutionPending) {
                 return;
             }
 
-            long remainingTime = strategy.getTradingSchedule().getRemainingTime(strategy.getMarketBook().getSnapshot().getTime());
+            //TODO: This when-to-trade condition on next few lines seems to be a better fit
+            //TODO: within the strategy itself.  Investigate/refactor later.
+            final Snapshot currentSnapshot = strategy.getMarket().getSnapshot();
+            long remainingTime = strategy.getTradingSchedule().getRemainingTime(currentSnapshot.getTime());
             long remainingMinutes = remainingTime / (1000 * 60);
             if (strategy.getPositionManager().getTargetPosition() != 0 && remainingMinutes < 15) {
                 return;
@@ -347,7 +367,9 @@ public class TraderAssistant {
 
             openOrders.put(orderID, new OpenOrder(orderID, order, strategy));
 
-            double midPrice = strategy.getMarketBook().getSnapshot().getPrice();
+            //TODO: the computation of expectedFillPrice seems better left to the strategy itself
+            //TODO: Investigate and see if this can be refactored
+            double midPrice = currentSnapshot.getPrice();
             double bidAskSpread = strategy.getBidAskSpread();
             double expectedFillPrice = order.action() == Types.Action.BUY
                     ? (midPrice + bidAskSpread / 2)
@@ -369,7 +391,7 @@ public class TraderAssistant {
         }
     }
 
-    public void placeMarketOrder(Contract contract, int quantity, String action, BookStrategy strategy) {
+    public void placeMarketOrder(Contract contract, int quantity, String action, Strategy strategy) {
         Order order = new Order();
         order.overridePercentageConstraints(true);
         order.action(action);

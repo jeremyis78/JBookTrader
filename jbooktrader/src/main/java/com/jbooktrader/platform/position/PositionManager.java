@@ -16,14 +16,14 @@ import java.util.*;
  */
 public class PositionManager {
     private final LinkedList<Position> positionsHistory;
-    private final BookStrategy strategy;
+    private final Strategy strategy;
     private final EventReport eventReport;
     private final TraderAssistant traderAssistant;
     private final PerformanceManager performanceManager;
     private int currentPosition, targetPosition;
     private double avgFillPrice, expectedFillPrice;
 
-    public PositionManager(BookStrategy strategy) {
+    public PositionManager(Strategy strategy) {
         this.strategy = strategy;
         positionsHistory = new LinkedList<>();
         eventReport = Dispatcher.getInstance().getEventReport();
@@ -89,7 +89,8 @@ public class PositionManager {
 
         Mode mode = Dispatcher.getInstance().getMode();
         if (mode == Mode.BackTest) {
-            positionsHistory.add(new Position(strategy.getMarketBook().getSnapshot().getTime(), currentPosition, avgFillPrice));
+            long time = strategy.getMarket().getSnapshot().getTime();
+            positionsHistory.add(new Position(time, currentPosition, avgFillPrice));
         }
 
         if (mode != Mode.Optimization) {
@@ -106,7 +107,7 @@ public class PositionManager {
     }
 
     public void trade() {
-        if (strategy.getMarketBook().isExchangeOpen()) {
+        if (strategy.isOkToTrade()) { //TODO: can this be strategy.getMarket().isExchangeOpen()?
             int quantity = targetPosition - currentPosition;
             if (quantity != 0) {
                 String action = (quantity > 0) ? "BUY" : "SELL";

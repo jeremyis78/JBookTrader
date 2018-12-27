@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class StrategyReportManager {
     private final List<String> strategyReportHeaders;
-    private final BookStrategy strategy;
+    private final Strategy strategy;
     private final DecimalFormat df2, df5;
     private final SimpleDateFormat dateFormat, timeFormat;
     private final List<String> strategyReportColumns;
@@ -25,7 +25,7 @@ public class StrategyReportManager {
     private final PerformanceManager performanceManager;
     private StrategyReport strategyReport;
 
-    public StrategyReportManager(BookStrategy strategy) {
+    public StrategyReportManager(Strategy strategy) {
         this.strategy = strategy;
         positionManager = strategy.getPositionManager();
         performanceManager = strategy.getPerformanceManager();
@@ -82,7 +82,9 @@ public class StrategyReportManager {
         Mode mode = Dispatcher.getInstance().getMode();
         boolean useNTPTime = (mode == Mode.ForwardTest || mode == Mode.Trade || mode == Mode.ForceClose);
 
-        long now = useNTPTime ? Dispatcher.getInstance().getNTPClock().getTime() : strategy.getMarketBook().getSnapshot().getTime();
+        long now = useNTPTime
+                ? Dispatcher.getInstance().getNTPClock().getTime()
+                : strategy.getMarket().getSnapshot().getTime();
         String date = dateFormat.format(now);
         String time = timeFormat.format(now);
         strategyReport.report(strategyReportColumns, date, time);

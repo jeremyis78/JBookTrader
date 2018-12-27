@@ -64,7 +64,7 @@ public class Trader extends EWrapperAdapter {
             if (openOrder != null) {
                 openOrder.add(execution);
                 if (openOrder.isFilled()) {
-                    BookStrategy strategy = openOrder.getStrategy();
+                    Strategy strategy = openOrder.getStrategy();
                     PositionManager positionManager = strategy.getPositionManager();
                     positionManager.update(openOrder);
                     openOrders.remove(orderId);
@@ -181,7 +181,7 @@ public class Trader extends EWrapperAdapter {
 
             if (errorCode == 201) { // Order rejected: insufficient margin
                 OpenOrder openOrder = traderAssistant.getOpenOrders().get(id);
-                BookStrategy strategy = openOrder.getStrategy();
+                Strategy strategy = openOrder.getStrategy();
                 strategy.disable();
                 traderAssistant.getOpenOrders().remove(id);
                 traderAssistant.resetOrderExecutionPending();

@@ -25,7 +25,7 @@ public class PortfolioManager {
         maxOpenPositions = Integer.parseInt(prefs.get(MaxOpenPositions));
     }
 
-    public int getSize(BookStrategy strategy) {
+    public int getSize(Strategy strategy) {
         Mode mode = dispatcher.getMode();
         if (mode == Mode.BackTest || mode == Mode.Optimization) {
             return 1;
@@ -37,7 +37,7 @@ public class PortfolioManager {
         }
 
         int openPositions = 0;
-        for (BookStrategy s : traderAssistant.getAllStrategies()) {
+        for (Strategy s : traderAssistant.getBookStrategies()) {
             int position = s.getPositionManager().getCurrentPosition();
             if (position != 0) {
                 openPositions++;

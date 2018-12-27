@@ -3,6 +3,7 @@ package com.jbooktrader.platform.strategy;
 import com.ib.client.*;
 import com.jbooktrader.platform.commission.*;
 import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbar.MarketData;
 import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
@@ -19,13 +20,12 @@ import com.jbooktrader.platform.schedule.*;
  *
  * @author Eugene Kononov
  */
-public abstract class BookStrategy implements Comparable<BookStrategy> {
+public abstract class BookStrategy implements Strategy, Comparable<BookStrategy> {
     private final StrategyParams params;
     private final EventReport eventReport;
     private final Dispatcher dispatcher;
     private final String name;
     private final PortfolioManager portfolioManager;
-    private MarketBook marketBook;
     private Contract contract;
     private TradingSchedule tradingSchedule;
     private PositionManager positionManager;
@@ -34,6 +34,9 @@ public abstract class BookStrategy implements Comparable<BookStrategy> {
     private IndicatorManager indicatorManager;
     private double bidAskSpread;
     private boolean isDisabled;
+
+    private MarketBook marketBook;
+
 
     protected BookStrategy(StrategyParams params) {
         this.params = params;
@@ -45,12 +48,25 @@ public abstract class BookStrategy implements Comparable<BookStrategy> {
         dispatcher = Dispatcher.getInstance();
         eventReport = dispatcher.getEventReport();
         portfolioManager = dispatcher.getPortfolioManager();
+
+    }
+
+    protected void setStrategy(Contract contract, TradingSchedule tradingSchedule, int multiplier, Commission commission, double bidAskSpread) {
+        this.contract = contract;
+        contract.multiplier(String.valueOf(multiplier));
+        this.tradingSchedule = tradingSchedule;
+        performanceManager = new PerformanceManager(this, multiplier, commission);
+        positionManager = new PositionManager(this);
+        strategyReportManager = new StrategyReportManager(this);
+        marketBook = dispatcher.getTrader().getAssistant().createMarketBook(this);
+        this.bidAskSpread = bidAskSpread;
     }
 
     /**
      * Framework calls this method when a new snapshot of the limit order book is taken.
      */
     public abstract void onBookSnapshot();
+
 
     /**
      * Framework calls this method to set strategy parameter ranges and values.
@@ -61,6 +77,21 @@ public abstract class BookStrategy implements Comparable<BookStrategy> {
      * Framework calls this method to instantiate indicators.
      */
     public abstract void setIndicators();
+
+    /**
+     * Return true if we are okay to trade (e.g. exchange is open or
+     * quote history has enough history)
+     * @return true if ok to trade now, false otherwise.
+     *
+     * Note: it seems there are way too many methods in the strategy
+     * and places in the code base outside of the strategy where we're
+     * tracking when-to-trade conditions. Would be nice to simplify and
+     * put all conditions about when-to-trade within the strategies
+     * and expose a simpler api from Strategy.
+     */
+    public boolean isOkToTrade(){
+        return getMarket().isExchangeOpen();
+    }
 
     protected void goLong() {
         int targetPosition = getPositionManager().getTargetPosition();
@@ -144,18 +175,12 @@ public abstract class BookStrategy implements Comparable<BookStrategy> {
         return indicatorManager.addIndicator(indicator);
     }
 
-    protected void setStrategy(Contract contract, TradingSchedule tradingSchedule, int multiplier, Commission commission, double bidAskSpread) {
-        this.contract = contract;
-        contract.multiplier(String.valueOf(multiplier));
-        this.tradingSchedule = tradingSchedule;
-        performanceManager = new PerformanceManager(this, multiplier, commission);
-        positionManager = new PositionManager(this);
-        strategyReportManager = new StrategyReportManager(this);
-        marketBook = dispatcher.getTrader().getAssistant().createMarketBook(this);
-        this.bidAskSpread = bidAskSpread;
+    @Override
+    public MarketData getMarket(){
+        return getMarketBook();
     }
 
-    public MarketBook getMarketBook() {
+    private MarketBook getMarketBook() {
         return marketBook;
     }
 

@@ -1,6 +1,7 @@
 package com.jbooktrader.platform.indicator;
 
 
+import com.jbooktrader.platform.marketbar.MarketData;
 import com.jbooktrader.platform.marketbook.*;
 
 /**
@@ -10,7 +11,7 @@ import com.jbooktrader.platform.marketbook.*;
  */
 public abstract class Indicator {
     private final String key;
-    protected MarketBook marketBook;
+    protected MarketData marketBook;
     protected double value;
 
     public abstract void calculate();

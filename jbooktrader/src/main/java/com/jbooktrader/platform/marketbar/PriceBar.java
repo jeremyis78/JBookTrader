@@ -1,6 +1,6 @@
 package com.jbooktrader.platform.marketbar;
 
-import com.jbooktrader.platform.trader.JSystemTraderException;
+import com.jbooktrader.platform.model.JBookTraderException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -158,7 +158,7 @@ public class PriceBar implements Snapshot {
     }
 
 
-    public static int barSizeToSeconds(int barSize) throws JSystemTraderException {
+    public static int barSizeToSeconds(int barSize) throws JBookTraderException {
         int minutes;
 
         switch (barSize) {
@@ -181,7 +181,7 @@ public class PriceBar implements Snapshot {
                 minutes = 30;
                 break;
             default:
-                throw new JSystemTraderException("Bar size " + barSize + " is not supported");
+                throw new JBookTraderException("Bar size " + barSize + " is not supported");
 
         }
 

@@ -17,7 +17,7 @@ import java.util.*;
 public class PerformanceManager {
     private final int multiplier;
     private final Commission commission;
-    private final BookStrategy strategy;
+    private final Strategy strategy;
     private PerformanceChartData performanceChartData;
     private int trades, profitableTrades, previousPosition;
     private double tradeCommission, totalCommission;
@@ -31,7 +31,7 @@ public class PerformanceManager {
     private long longTrades, shortTrades;
     private double maxSingleLoss;
 
-    public PerformanceManager(BookStrategy strategy, int multiplier, Commission commission) {
+    public PerformanceManager(Strategy strategy, int multiplier, Commission commission) {
         this.strategy = strategy;
         this.multiplier = multiplier;
         this.commission = commission;
@@ -156,7 +156,8 @@ public class PerformanceManager {
     }
 
     public void updateOnTrade(int quantity, double avgFillPrice, int position) {
-        long snapshotTime = strategy.getMarketBook().getSnapshot().getTime();
+        long snapshotTime = strategy.getMarket().getSnapshot().getTime();
+
         if (position != 0) {
             if (timeInMarketStart == 0) {
                 timeInMarketStart = snapshotTime;
