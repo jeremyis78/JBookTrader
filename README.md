@@ -1,5 +1,14 @@
 # JBookTrader [![Build Status](https://travis-ci.org/jeremyis78/JBookTrader.svg?branch=master)](https://travis-ci.org/jeremyis78/JBookTrader)
 
+This project is my attempt at merging JBookTrader and JSystemTrader to help practice 
+my software architecture/design skills. I want to be able to run candle-based
+(OHLCV) trading strategies as well as the already supported market-depth-based
+strategies in one project. There are some fundamental differences between the two 
+projects and therein lies the challenge to overcome so both types of strategies can
+be traded under a single portfolio manager. After that's done, I also want to add 
+the ability to automate option trading strategies based on technical analysis
+indicators/IV Rank to help remove my emotions from trading them.
+
 JBookTrader is a fully automated trading system (ATS) that can trade various
 types of market securities during the trading day without user monitoring. All
 aspects of trading, such as obtaining market prices, analyzing price patterns,
@@ -54,10 +63,3 @@ NOTES
  1) for both run scripts, you can attach your IDE's debugger on port 5005
  2) If all new development used JBookTraderJar.sh there's no
     need for the lib/ directory anymore.
-
-Release ([is still a work in progress](https://github.com/jeremyis78/JBookTrader/issues/4))
-
-```bash
-BUILD_NUMBER=...
-mvn deploy scm:tag -Drevision=${BUILD_NUMBER}
-```
