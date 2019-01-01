@@ -21,6 +21,8 @@ import com.jbooktrader.platform.schedule.*;
  * @author Eugene Kononov
  */
 public abstract class BookStrategy implements Strategy, Comparable<BookStrategy> {
+    private static final long GAP_SIZE = 5 * 60 * 1000;// 5 minutes
+    private static final long MIN_SAMPLE_SIZE = 1 * 60 * 60;// 1 hour worth of samples
     private final StrategyParams params;
     private final EventReport eventReport;
     private final Dispatcher dispatcher;
@@ -117,6 +119,15 @@ public abstract class BookStrategy implements Strategy, Comparable<BookStrategy>
         positionManager.setTargetPosition(0);
     }
 
+    @Override
+    public long getMinimumSamplesSize() {
+        return MIN_SAMPLE_SIZE;
+    }
+
+    @Override
+    public long getGapSize() {
+        return GAP_SIZE;
+    }
 
     public double getBidAskSpread() {
         return bidAskSpread;
@@ -212,7 +223,7 @@ public abstract class BookStrategy implements Strategy, Comparable<BookStrategy>
         if (isInSchedule) {
             if (dispatcher.getMode() == Mode.ForceClose) {
                 closePosition();
-            } else if (indicatorManager.hasValidIndicators()) {
+            } else if (indicatorManager.hasValidIndicators(this)) {
                 onBookSnapshot();
             }
             if (!isDisabled) {
@@ -225,7 +236,7 @@ public abstract class BookStrategy implements Strategy, Comparable<BookStrategy>
 
     public void process() {
         if (!marketBook.isEmpty()) {
-            indicatorManager.updateIndicators();
+            indicatorManager.updateIndicators(this);
             Snapshot marketSnapshot = marketBook.getSnapshot();
             long instant = marketSnapshot.getTime();
             processInstant(tradingSchedule.contains(instant));

@@ -44,7 +44,7 @@ public class BackTester {
             Snapshot marketSnapshot = snapshots.get(count);
             marketBook.setSnapshot(marketSnapshot);
             performanceChartData.update(marketSnapshot);
-            indicatorManager.updateIndicators();
+            indicatorManager.updateIndicators(strategy);
             long instant = marketSnapshot.getTime();
 
             //TODO: This when-to-trade logic (ruling out gaps in the market), again, seems like
@@ -55,7 +55,7 @@ public class BackTester {
             }
 
             strategy.processInstant(isInSchedule);
-            if (indicatorManager.hasValidIndicators()) {
+            if (indicatorManager.hasValidIndicators(strategy)) {
                 performanceChartData.update(indicators, instant);
             }
 

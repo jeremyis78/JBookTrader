@@ -3,6 +3,7 @@ package com.jbooktrader.platform.strategy;
 import com.ib.client.Contract;
 import com.jbooktrader.platform.indicator.IndicatorManager;
 import com.jbooktrader.platform.marketbar.MarketData;
+import com.jbooktrader.platform.optimizer.StrategyParams;
 import com.jbooktrader.platform.performance.PerformanceManager;
 import com.jbooktrader.platform.position.PositionManager;
 import com.jbooktrader.platform.schedule.TradingSchedule;
@@ -38,6 +39,21 @@ public interface Strategy {
      * @return
      */
     double getBidAskSpread();
+
+    /**
+     * Returns the minimum number of samples needed for this strategy
+     * before it can make a trading decision.
+     * @return
+     */
+    long getMinimumSamplesSize();
+
+    /**
+     * If the difference from the previous snapshot to the current snapshot
+     * is greater than this gap size value, the framework will reset the number of samples
+     * to zero.
+     * @return
+     */
+    long getGapSize();
 
     /**
      * Returns some type of data about the market being traded with this strategy.
@@ -82,4 +98,7 @@ public interface Strategy {
 
     IndicatorManager getIndicatorManager();
 
+    StrategyParams getParams();
+
+    String getSymbol();
 }

@@ -50,7 +50,7 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
         for (int count = 0; count < snapshotsCount; count++) {
             Snapshot marketSnapshot = snapshots.get(count);
             marketBook.setSnapshot(marketSnapshot);
-            indicatorManager.updateIndicators();
+
             boolean isInSchedule = tradingSchedule.contains(marketSnapshot.getTime());
             if (count < snapshotsCount - 1) {
                 // ekk-needs optimization
@@ -58,6 +58,7 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
             }
 
             for (BookStrategy strategy : strategies) {
+                indicatorManager.updateIndicators(strategy);
                 strategy.processInstant(isInSchedule);
             }
 
