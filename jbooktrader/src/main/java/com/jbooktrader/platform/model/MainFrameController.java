@@ -48,7 +48,7 @@ public class MainFrameController {
         }
     }
 
-    private BookStrategy createSelectedRowStrategy() throws JBookTraderException {
+    private Strategy createSelectedRowStrategy() throws JBookTraderException {
         int selectedRow = strategyTable.getSelectedRow();
         if (selectedRow < 0) {
             throw new JBookTraderException("No strategy is selected.");
@@ -93,7 +93,7 @@ public class MainFrameController {
                         throw new JBookTraderException("No strategy is selected.");
                     }
 
-                    BookStrategy strategy = strategyTableModel.getStrategyForRow(selectedRow);
+                    Strategy strategy = strategyTableModel.getStrategyForRow(selectedRow);
                     if (strategy == null) {
                         String name = strategyTableModel.getStrategyNameForRow(selectedRow);
                         strategy = ClassFinder.getInstance(name);
@@ -114,7 +114,7 @@ public class MainFrameController {
                 try {
                     mainViewDialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                     dispatcher.getTrader().getAssistant().removeAllStrategies();
-                    BookStrategy strategy = createSelectedRowStrategy();
+                    Strategy strategy = createSelectedRowStrategy();
                     dispatcher.setMode(Mode.BackTest);
                     new BackTestDialog(mainViewDialog, strategy);
                 } catch (Throwable t) {
@@ -149,7 +149,7 @@ public class MainFrameController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     mainViewDialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    BookStrategy strategy = createSelectedRowStrategy();
+                    Strategy strategy = createSelectedRowStrategy();
                     dispatcher.setMode(Mode.ForwardTest);
                     dispatcher.getTrader().getAssistant().addStrategy(strategy);
                 } catch (Throwable t) {
@@ -164,7 +164,7 @@ public class MainFrameController {
             public void actionPerformed(ActionEvent e) {
                 try {
                     mainViewDialog.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    BookStrategy strategy = createSelectedRowStrategy();
+                    Strategy strategy = createSelectedRowStrategy();
                     dispatcher.setMode(Mode.Trade);
                     dispatcher.getTrader().getAssistant().addStrategy(strategy);
                 } catch (Throwable t) {

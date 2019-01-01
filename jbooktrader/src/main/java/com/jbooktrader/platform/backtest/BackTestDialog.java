@@ -36,7 +36,7 @@ public class BackTestDialog extends JBTDialog implements ProgressListener {
     private JProgressBar progressBar;
     private boolean isCancelled;
 
-    public BackTestDialog(JFrame parent, BookStrategy strategy) {
+    public BackTestDialog(JFrame parent, Strategy strategy) {
         super(parent);
         strategyName = strategy.getName();
         prefs = PreferencesHolder.getInstance();
@@ -93,7 +93,7 @@ public class BackTestDialog extends JBTDialog implements ProgressListener {
                         throw new JBookTraderException(msg);
                     }
 
-                    BookStrategy strategyInstance = ClassFinder.getInstance(strategyName);
+                    Strategy strategyInstance = ClassFinder.getInstance(strategyName);
                     BackTestStrategyRunner btsr = new BackTestStrategyRunner(BackTestDialog.this, strategyInstance);
                     new Thread(btsr).start();
                 } catch (Exception ex) {

@@ -279,6 +279,8 @@ public class TraderAssistant {
     public synchronized void addStrategy(Strategy strategy) throws InterruptedException {
         try {
             if(!(strategy instanceof BookStrategy)){
+                String msg = "A non BookStrategy will lead to errors until they are fully supported";
+                eventReport.report(strategy.getName(), msg);
                 throw new UnsupportedOperationException("only BookStrategies supported!");
             }
 

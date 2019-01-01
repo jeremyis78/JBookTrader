@@ -15,7 +15,7 @@ import java.util.concurrent.*;
  */
 public class DivideAndConquerOptimizerRunner extends OptimizerRunner {
 
-    public DivideAndConquerOptimizerRunner(OptimizerDialog optimizerDialog, BookStrategy strategy, StrategyParams params) throws JBookTraderException {
+    public DivideAndConquerOptimizerRunner(OptimizerDialog optimizerDialog, Strategy strategy, StrategyParams params) throws JBookTraderException {
         super(optimizerDialog, strategy, params);
     }
 

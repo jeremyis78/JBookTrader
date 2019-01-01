@@ -79,20 +79,20 @@ public class ClassFinder {
         return classNames;
     }
 
-    public static BookStrategy getInstance(String name) throws JBookTraderException {
+    public static Strategy getInstance(String name) throws JBookTraderException {
         try {
             String className = "com.jbooktrader.strategy." + name;
             Class<?> clazz = Class.forName(className);  // changed in case other classes are in com.jbooktrader.strategy
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 return null;
             }
-            if (!BookStrategy.class.isAssignableFrom(clazz)) {  // now check to see if it extends Strategy, otherwise ignore it
+            if (!Strategy.class.isAssignableFrom(clazz)) {  // now check to see if it extends Strategy, otherwise ignore it
                 return null;
             }
 
             Class<?>[] parameterTypes = new Class[]{StrategyParams.class};
             Constructor<?> constructor = clazz.getConstructor(parameterTypes);
-            return (BookStrategy) constructor.newInstance(new StrategyParams());
+            return (Strategy) constructor.newInstance(new StrategyParams());
 
         } catch (ClassCastException cce) {
             throw new JBookTraderException("Class " + name + " does not extend class Strategy.");
@@ -104,13 +104,13 @@ public class ClassFinder {
     }
 
 
-    public static List<BookStrategy> getStrategies() {
-        List<BookStrategy> strategies = new ArrayList<>();
+    public static List<Strategy> getStrategies() {
+        List<Strategy> strategies = new ArrayList<>();
         List<String> strategyNames = getClasses();
 
         for (String strategyName : strategyNames) {
             try {
-                BookStrategy strategy = getInstance(strategyName);
+                Strategy strategy = getInstance(strategyName);
                 if (strategy != null) {
                     strategies.add(strategy);
                 }

@@ -43,8 +43,8 @@ public class StrategyTableModel extends TableDataModel {
         return traderAssistant.getStrategy(name);
     }
 
-    public BookStrategy createStrategyForRow(int row) throws JBookTraderException {
-        BookStrategy strategy = getStrategyForRow(row);
+    public Strategy createStrategyForRow(int row) throws JBookTraderException {
+        Strategy strategy = getStrategyForRow(row);
         if (strategy != null) {
             throw new JBookTraderException("Strategy " + strategy + " is already running.");
         }
@@ -55,7 +55,7 @@ public class StrategyTableModel extends TableDataModel {
         return strategy;
     }
 
-    private int getRowForStrategy(BookStrategy strategy) {
+    private int getRowForStrategy(Strategy strategy) {
         int selectedRow = -1;
         int rowCount = getRowCount();
         for (int row = 0; row < rowCount; row++) {
@@ -75,7 +75,7 @@ public class StrategyTableModel extends TableDataModel {
         updateRow(rowIndex, row);
     }
 
-    public void update(BookStrategy strategy) {
+    public void update(Strategy strategy) {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
 
@@ -103,7 +103,7 @@ public class StrategyTableModel extends TableDataModel {
         updateRow(rowIndex, row);
     }
 
-    public void addStrategy(BookStrategy strategy) {
+    public void addStrategy(Strategy strategy) {
         Object[] row = new Object[getColumnCount()];
         row[Strategy.ordinal()] = strategy.getName();
         String symbol = strategy.getSymbol();

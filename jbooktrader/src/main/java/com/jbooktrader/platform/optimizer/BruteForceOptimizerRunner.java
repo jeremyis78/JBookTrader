@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class BruteForceOptimizerRunner extends OptimizerRunner {
 
-    public BruteForceOptimizerRunner(OptimizerDialog optimizerDialog, BookStrategy strategy, StrategyParams params) throws JBookTraderException {
+    public BruteForceOptimizerRunner(OptimizerDialog optimizerDialog, Strategy strategy, StrategyParams params) throws JBookTraderException {
         super(optimizerDialog, strategy, params);
     }
 

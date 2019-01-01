@@ -170,7 +170,7 @@ public class MainFrameDialog extends JFrame implements ModelListener {
 
 
     private void populateStrategies() {
-        for (BookStrategy strategy : ClassFinder.getStrategies()) {
+        for (Strategy strategy : ClassFinder.getStrategies()) {
             strategyTableModel.addStrategy(strategy);
         }
     }

@@ -47,7 +47,7 @@ public abstract class OptimizerRunner implements Runnable {
     private long totalSteps;
     private String totalStrategiesString;
 
-    protected OptimizerRunner(OptimizerDialog optimizerDialog, BookStrategy strategy, StrategyParams params) throws JBookTraderException {
+    protected OptimizerRunner(OptimizerDialog optimizerDialog, Strategy strategy, StrategyParams params) throws JBookTraderException {
         this.optimizerDialog = optimizerDialog;
         strategyName = strategy.getName();
         strategyParams = params;
