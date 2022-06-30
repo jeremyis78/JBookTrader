@@ -33,7 +33,7 @@ public class PerformanceChart {
     private static final int PRICE_PLOT_WEIGHT = 3;
     private static final Paint BACKGROUND_COLOR = new GradientPaint(0, 0, new Color(0, 0, 176), 0, 0, Color.BLACK);
 
-    private final BookStrategy strategy;
+    private final Strategy strategy;
     private final ArrayList<CircledTextAnnotation> annotations = new ArrayList<>();
     private final PreferencesHolder prefs;
     private final List<XYPlot> indicatorPlots;
@@ -47,7 +47,7 @@ public class PerformanceChart {
     private JComboBox<String> timeLineCombo, timeZoneCombo;
     private JCheckBox indicatorVisibilityCheck, tradesVisibilityCheck, pnlVisibilityCheck;
 
-    public PerformanceChart(JFrame parent, BookStrategy strategy) {
+    public PerformanceChart(JFrame parent, Strategy strategy) {
         indicatorPlots = new ArrayList<>();
         performanceChartData = strategy.getPerformanceManager().getPerformanceChartData();
         prefs = PreferencesHolder.getInstance();

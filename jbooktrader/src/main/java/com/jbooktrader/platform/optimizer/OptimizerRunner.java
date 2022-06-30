@@ -1,7 +1,7 @@
 package com.jbooktrader.platform.optimizer;
 
 import com.jbooktrader.platform.backtest.*;
-import com.jbooktrader.platform.marketbar.Snapshot;
+import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.preferences.*;
 import com.jbooktrader.platform.report.*;
@@ -43,7 +43,7 @@ public abstract class OptimizerRunner implements Runnable {
     private ExecutorService optimizationExecutor;
     private ResultComparator resultComparator;
     private ComputationalTimeEstimator timeEstimator;
-    private List<Snapshot> snapshots;
+    private List<MarketSnapshot> snapshots;
     private long totalSteps;
     private String totalStrategiesString;
 
@@ -80,9 +80,9 @@ public abstract class OptimizerRunner implements Runnable {
         strategiesPerProcessor = PreferencesHolder.getInstance().getInt(JBTPreferences.StrategiesPerProcessor);
     }
 
-    public BookStrategy getStrategyInstance(StrategyParams params) throws JBookTraderException {
+    public Strategy getStrategyInstance(StrategyParams params) throws JBookTraderException {
         try {
-            return (BookStrategy) strategyConstructor.newInstance(params);
+            return (Strategy) strategyConstructor.newInstance(params);
         } catch (InvocationTargetException ite) {
             throw new JBookTraderException(ite.getCause());
         } catch (Exception e) {
@@ -108,7 +108,7 @@ public abstract class OptimizerRunner implements Runnable {
         return minTrades;
     }
 
-    public List<Snapshot> getSnapshots() {
+    public List<MarketSnapshot> getSnapshots() {
         return snapshots;
     }
 
@@ -170,16 +170,16 @@ public abstract class OptimizerRunner implements Runnable {
         optimizationReport.reportDescription("Minimum trades for strategy inclusion: " + optimizerDialog.getMinTrades());
         optimizationReport.reportDescription("Back data file: " + optimizerDialog.getFileName());
 
-        List<String> optimizerReportHeaders = new ArrayList<>();
+        List<String> otpimizerReportHeaders = new ArrayList<>();
         StrategyParams params = optimizationResults.iterator().next().getParams();
         for (StrategyParam param : params.getAll()) {
-            optimizerReportHeaders.add(param.getName());
+            otpimizerReportHeaders.add(param.getName());
         }
 
         for (PerformanceMetric performanceMetric : PerformanceMetric.values()) {
-            optimizerReportHeaders.add(performanceMetric.getName());
+            otpimizerReportHeaders.add(performanceMetric.getName());
         }
-        optimizationReport.reportHeaders(optimizerReportHeaders);
+        optimizationReport.reportHeaders(otpimizerReportHeaders);
 
         int maxIndex = Math.min(MAX_SAVED_RESULTS, optimizationResults.size());
         for (int index = 0; index < maxIndex; index++) {
@@ -255,8 +255,7 @@ public abstract class OptimizerRunner implements Runnable {
             optimizationResults.clear();
             optimizerDialog.setResults(optimizationResults);
             optimizerDialog.enableProgress();
-            BackTestBookFileReader backTestFileReader =
-                    new BackTestBookFileReader(optimizerDialog.getFileName(), optimizerDialog.getDateFilter());
+            BackTestFileReader backTestFileReader = new BackTestFileReader(optimizerDialog.getFileName(), optimizerDialog.getDateFilter());
             optimizerDialog.setProgress("Loading historical data file...");
             snapshots = backTestFileReader.load(optimizerDialog);
             snapshotCount = snapshots.size();

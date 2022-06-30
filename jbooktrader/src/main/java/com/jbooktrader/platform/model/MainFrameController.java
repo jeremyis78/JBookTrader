@@ -185,7 +185,7 @@ public class MainFrameController {
                         return;
                     }
 
-                    BookStrategy strategy = strategyTableModel.getStrategyForRow(selectedRow);
+                    Strategy strategy = strategyTableModel.getStrategyForRow(selectedRow);
                     if (strategy == null) {
                         String msg = "Please run this strategy first.";
                         MessageDialog.showMessage(msg);

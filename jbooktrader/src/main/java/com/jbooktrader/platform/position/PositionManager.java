@@ -89,8 +89,7 @@ public class PositionManager {
 
         Mode mode = Dispatcher.getInstance().getMode();
         if (mode == Mode.BackTest) {
-            long time = strategy.getMarket().getSnapshot().getTime();
-            positionsHistory.add(new Position(time, currentPosition, avgFillPrice));
+            positionsHistory.add(new Position(strategy.getMarketBook().getSnapshot().getTime(), currentPosition, avgFillPrice));
         }
 
         if (mode != Mode.Optimization) {
@@ -107,7 +106,7 @@ public class PositionManager {
     }
 
     public void trade() {
-        if (strategy.isOkToTrade()) { //TODO: can this be strategy.getMarket().isExchangeOpen()?
+        if (strategy.getMarketBook().isExchangeOpen()) {
             int quantity = targetPosition - currentPosition;
             if (quantity != 0) {
                 String action = (quantity > 0) ? "BUY" : "SELL";

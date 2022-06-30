@@ -1,13 +1,10 @@
 package com.jbooktrader.platform.marketbook;
 
 
-import com.jbooktrader.platform.marketbar.Snapshot;
-
-
 /**
  * @author Eugene Kononov
  */
-public class MarketSnapshot implements Snapshot {
+public class MarketSnapshot {
     private final long time;
     private final double balance;
     private final double price;
@@ -21,7 +18,6 @@ public class MarketSnapshot implements Snapshot {
         this.volume = volume;
     }
 
-    @Override
     public double getBalance() {
         return balance;
     }

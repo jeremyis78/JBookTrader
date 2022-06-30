@@ -3,8 +3,7 @@ package com.jbooktrader.platform.backtest;
 
 import com.jbooktrader.platform.chart.*;
 import com.jbooktrader.platform.indicator.*;
-import com.jbooktrader.platform.marketbar.MarketData;
-import com.jbooktrader.platform.marketbar.Snapshot;
+import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.model.ModelListener.*;
 import com.jbooktrader.platform.schedule.*;
@@ -19,19 +18,19 @@ import java.util.*;
  */
 public class BackTester {
     private final Strategy strategy;
-    private final BackTestBookFileReader backTestFileReader;
+    private final BackTestFileReader backTestFileReader;
     private final BackTestDialog backTestDialog;
 
-    public BackTester(Strategy strategy, BackTestBookFileReader backTestFileReader, BackTestDialog backTestDialog) {
+    public BackTester(Strategy strategy, BackTestFileReader backTestFileReader, BackTestDialog backTestDialog) {
         this.strategy = strategy;
         this.backTestFileReader = backTestFileReader;
         this.backTestDialog = backTestDialog;
     }
 
     public void execute() throws JBookTraderException {
-        List<Snapshot> snapshots = backTestFileReader.load(backTestDialog);
+        List<MarketSnapshot> snapshots = backTestFileReader.load(backTestDialog);
 
-        MarketData marketBook = strategy.getMarket();
+        MarketBook marketBook = strategy.getMarketBook();
         IndicatorManager indicatorManager = strategy.getIndicatorManager();
         strategy.getPerformanceManager().createPerformanceChartData(backTestDialog.getBarSize(), indicatorManager.getIndicators());
 
@@ -41,21 +40,19 @@ public class BackTester {
 
         long snapshotsCount = snapshots.size();
         for (int count = 0; count < snapshotsCount; count++) {
-            Snapshot marketSnapshot = snapshots.get(count);
+            MarketSnapshot marketSnapshot = snapshots.get(count);
             marketBook.setSnapshot(marketSnapshot);
             performanceChartData.update(marketSnapshot);
-            indicatorManager.updateIndicators(strategy);
+            indicatorManager.updateIndicators();
             long instant = marketSnapshot.getTime();
 
-            //TODO: This when-to-trade logic (ruling out gaps in the market), again, seems like
-            //TODO: it should belong in the strategy itself.  Investigate/refactor this.
             boolean isInSchedule = tradingSchedule.contains(instant);
             if (count < snapshotsCount - 1) {
                 isInSchedule = isInSchedule && !marketBook.isGapping(snapshots.get(count + 1));
             }
 
             strategy.processInstant(isInSchedule);
-            if (indicatorManager.hasValidIndicators(strategy)) {
+            if (indicatorManager.hasValidIndicators()) {
                 performanceChartData.update(indicators, instant);
             }
 

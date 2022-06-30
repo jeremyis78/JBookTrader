@@ -247,7 +247,7 @@ public class BackTestDialog extends JBTDialog implements ProgressListener {
         return BarSize.getBarSize((String) barSizeCombo.getSelectedItem());
     }
 
-    public SnapshotFilter getDateFilter() {
-        return useDateRangeCheckBox.isSelected() ? new SnapshotFilter(fromDateEditor, toDateEditor) : null;
+    public MarketSnapshotFilter getDateFilter() {
+        return useDateRangeCheckBox.isSelected() ? new MarketSnapshotFilter(fromDateEditor, toDateEditor) : null;
     }
 }

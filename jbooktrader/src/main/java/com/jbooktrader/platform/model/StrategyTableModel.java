@@ -1,7 +1,5 @@
 package com.jbooktrader.platform.model;
 
-import com.jbooktrader.platform.marketbar.MarketData;
-import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.performance.*;
 import com.jbooktrader.platform.strategy.*;
@@ -38,7 +36,7 @@ public class StrategyTableModel extends TableDataModel {
         return (String) getRow(row)[Strategy.ordinal()];
     }
 
-    public BookStrategy getStrategyForRow(int row) {
+    public Strategy getStrategyForRow(int row) {
         String name = getStrategyNameForRow(row);
         return traderAssistant.getStrategy(name);
     }
@@ -68,7 +66,7 @@ public class StrategyTableModel extends TableDataModel {
         return selectedRow;
     }
 
-    public void expirationUpdate(BookStrategy strategy) {
+    public void expirationUpdate(Strategy strategy) {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
         row.put(Expiration, strategy.getContract().lastTradeDateOrContractMonth());
@@ -79,9 +77,9 @@ public class StrategyTableModel extends TableDataModel {
         int rowIndex = getRowForStrategy(strategy);
         EnumMap<StrategyTableColumn, Object> row = new EnumMap<>(StrategyTableColumn.class);
 
-        MarketData marketBook = strategy.getMarket();
+        MarketBook marketBook = strategy.getMarketBook();
         if (!marketBook.isEmpty()) {
-            Snapshot lastMarketSnapshot = marketBook.getSnapshot();
+            MarketSnapshot lastMarketSnapshot = marketBook.getSnapshot();
             row.put(Price, df6.format(lastMarketSnapshot.getPrice()));
             row.put(DepthBalance, df0.format(lastMarketSnapshot.getBalance()));
         }

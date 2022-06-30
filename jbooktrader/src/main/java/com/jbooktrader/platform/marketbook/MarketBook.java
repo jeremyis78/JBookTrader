@@ -1,8 +1,6 @@
 package com.jbooktrader.platform.marketbook;
 
 import com.jbooktrader.platform.backtest.*;
-import com.jbooktrader.platform.marketbar.MarketData;
-import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketdepth.*;
 import com.jbooktrader.platform.model.*;
 
@@ -13,9 +11,9 @@ import java.util.*;
  *
  * @author Eugene Kononov
  */
-public class MarketBook implements MarketData {
+public class MarketBook {
     private static final long GAP_SIZE = 60 * 60 * 1000;// 1 hour
-    private Snapshot marketSnapshot;
+    private MarketSnapshot marketSnapshot;
     private final MarketDepth marketDepth;
     private final String name;
     private final TimeZone timeZone;
@@ -37,11 +35,10 @@ public class MarketBook implements MarketData {
         return marketDepth;
     }
 
-    public void saveSnapshot(Snapshot marketSnapshot) {
+    public void saveSnapshot(MarketSnapshot marketSnapshot) {
         if (backTestFileWriter == null) {
             try {
-                final BackTestData backTestDataAdapter = new MarketSnapshotBackTestDataAdapter();
-                backTestFileWriter = new BackTestFileWriter(name, timeZone, backTestDataAdapter);
+                backTestFileWriter = new BackTestFileWriter(name, timeZone);
             } catch (JBookTraderException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
@@ -53,7 +50,7 @@ public class MarketBook implements MarketData {
         return marketSnapshot == null;
     }
 
-    public void setSnapshot(Snapshot marketSnapshot) {
+    public void setSnapshot(MarketSnapshot marketSnapshot) {
         this.marketSnapshot = marketSnapshot;
     }
 
@@ -65,18 +62,14 @@ public class MarketBook implements MarketData {
         isExchangeOpen = exchangeOpen;
     }
 
-    public boolean isGapping(Snapshot newMarketSnapshot) {
+    public boolean isGapping(MarketSnapshot newMarketSnapshot) {
         if (isEmpty()) {
             return false;
         }
         return (newMarketSnapshot.getTime() - marketSnapshot.getTime() > GAP_SIZE);
     }
 
-    /**
-     * Returns the last/most recent market snapshot.
-     * @return
-     */
-    public Snapshot getSnapshot() {
+    public MarketSnapshot getSnapshot() {
         return marketSnapshot;
     }
 

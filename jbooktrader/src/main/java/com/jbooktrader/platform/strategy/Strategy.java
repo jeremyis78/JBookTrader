@@ -1,104 +1,226 @@
 package com.jbooktrader.platform.strategy;
 
-import com.ib.client.Contract;
-import com.jbooktrader.platform.indicator.IndicatorManager;
-import com.jbooktrader.platform.marketbar.MarketData;
-import com.jbooktrader.platform.optimizer.StrategyParams;
-import com.jbooktrader.platform.performance.PerformanceManager;
-import com.jbooktrader.platform.position.PositionManager;
-import com.jbooktrader.platform.schedule.TradingSchedule;
+import com.ib.client.*;
+import com.jbooktrader.platform.commission.*;
+import com.jbooktrader.platform.indicator.*;
+import com.jbooktrader.platform.marketbook.*;
+import com.jbooktrader.platform.model.*;
+import com.jbooktrader.platform.model.ModelListener.*;
+import com.jbooktrader.platform.optimizer.*;
+import com.jbooktrader.platform.performance.*;
+import com.jbooktrader.platform.portfolio.manager.*;
+import com.jbooktrader.platform.position.*;
+import com.jbooktrader.platform.report.*;
+import com.jbooktrader.platform.schedule.*;
 
 /**
- * Represents a trading strategy.
- * NOTE: still in a lot of flux as I work on adding candle-based trading strategies.
+ * Base class for all classes that implement trading strategies.
+ *
+ * @author Eugene Kononov
  */
-public interface Strategy {
+public abstract class Strategy implements Comparable<Strategy> {
+    private final StrategyParams params;
+    private final EventReport eventReport;
+    private final Dispatcher dispatcher;
+    private final String name;
+    private final PortfolioManager portfolioManager;
+    private MarketBook marketBook;
+    private Contract contract;
+    private TradingSchedule tradingSchedule;
+    private PositionManager positionManager;
+    private PerformanceManager performanceManager;
+    private StrategyReportManager strategyReportManager;
+    private IndicatorManager indicatorManager;
+    private double bidAskSpread;
+    private boolean isDisabled;
+
+    protected Strategy(StrategyParams params) {
+        this.params = params;
+        if (params.size() == 0) {
+            setParams();
+        }
+
+        name = getClass().getSimpleName();
+        dispatcher = Dispatcher.getInstance();
+        eventReport = dispatcher.getEventReport();
+        portfolioManager = dispatcher.getPortfolioManager();
+    }
 
     /**
-     * Identifies the name of this strategy
-     * @return the name of the strategy
+     * Framework calls this method when a new snapshot of the limit order book is taken.
      */
-    String getName();
+    public abstract void onBookSnapshot();
 
     /**
-     * The IB-specific contract this strategy will trade.
-     * @return
+     * Framework calls this method to set strategy parameter ranges and values.
      */
-    Contract getContract();
+    protected abstract void setParams();
 
     /**
-     * Returns the schedule on which this strategy will trade.
-     * @return
+     * Framework calls this method to instantiate indicators.
      */
-    TradingSchedule getTradingSchedule();
+    public abstract void setIndicators();
 
-    /**
-     * Gets a fixed bid-ask spread for this strategy's instrument.
-     * "fixed" because we trade highly liquid instruments here.
-     * Use getMarket() to access an actual bid ask spread, if it provides a bid-ask spread.
-     * @return
-     */
-    double getBidAskSpread();
+    protected void goLong() {
+        int targetPosition = getPositionManager().getTargetPosition();
+        if (targetPosition <= 0) {
+            int size = portfolioManager.getSize(this);
+            if (size != 0) {
+                positionManager.setTargetPosition(size);
+            }
+        }
+    }
 
-    /**
-     * Returns the minimum number of samples needed for this strategy
-     * before it can make a trading decision.
-     * @return
-     */
-    long getMinimumSamplesSize();
+    protected void goShort() {
+        int targetPosition = getPositionManager().getTargetPosition();
+        if (targetPosition >= 0) {
+            int size = portfolioManager.getSize(this);
+            if (size != 0) {
+                positionManager.setTargetPosition(-size);
+            }
+        }
+    }
 
-    /**
-     * If the difference from the previous snapshot to the current snapshot
-     * is greater than this gap size value, the framework will reset the number of samples
-     * to zero.
-     * @return
-     */
-    long getGapSize();
+    public void goFlat() {
+        positionManager.setTargetPosition(0);
+    }
 
-    /**
-     * Returns some type of data about the market being traded with this strategy.
-     * For example, an order book, the top-of-the-book quote history (bid, ask, last, etc),
-     * or even some fundamental data.
-     *
-     * NOTE: I'm not entirely sure this should be in the interface, but for now it is.
-     * Maybe it should be passed into the processInstant() method or whatever method
-     * that runs the trading logic is eventually called.
-     *
-     * @return market data for the instrument being traded
-     */
-    MarketData getMarket();
 
-    /**
-     * Runs trading logic (goLong, goShort, goFlat, etc) given whether we are within our trading schedule.
-     *
-     * @param isInSchedule indicates we are within our trading schedule
-     */
-    void processInstant(boolean isInSchedule);
+    public double getBidAskSpread() {
+        return bidAskSpread;
+    }
 
-    /**
-     * Disables this strategy
-     */
-    void disable();
+    public void closePosition() {
+        goFlat();
+        if (positionManager.getCurrentPosition() != 0) {
+            Mode mode = dispatcher.getMode();
+            if (mode == Mode.ForwardTest || mode == Mode.Trade) {
+                String msg = "End of trading interval. Closing current position.";
+                eventReport.report(name, msg);
+            }
+            positionManager.trade();
+        }
+    }
 
-    boolean isOkToTrade();
+    public StrategyParams getParams() {
+        return params;
+    }
 
-    void goFlat();
+    protected int getParam(String name) {
+        return params.get(name).getValue();
+    }
 
-    void closePosition();
+    protected void addParam(String name, int min, int max, int step, int value) {
+        params.add(name, min, max, step, value);
+    }
 
-    StrategyReportManager getStrategyReportManager();
+    public PositionManager getPositionManager() {
+        return positionManager;
+    }
 
-    PositionManager getPositionManager();
+    public PerformanceManager getPerformanceManager() {
+        return performanceManager;
+    }
 
-    PerformanceManager getPerformanceManager();
+    public StrategyReportManager getStrategyReportManager() {
+        return strategyReportManager;
+    }
 
-    void setIndicatorManager(IndicatorManager indicatorManager);
+    public IndicatorManager getIndicatorManager() {
+        return indicatorManager;
+    }
 
-    void setIndicators();
+    public void setIndicatorManager(IndicatorManager indicatorManager) {
+        this.indicatorManager = indicatorManager;
+        indicatorManager.setMarketBook(marketBook);
+    }
 
-    IndicatorManager getIndicatorManager();
+    public TradingSchedule getTradingSchedule() {
+        return tradingSchedule;
+    }
 
-    StrategyParams getParams();
+    protected Indicator addIndicator(Indicator indicator) {
+        return indicatorManager.addIndicator(indicator);
+    }
 
-    String getSymbol();
+    protected void setStrategy(Contract contract, TradingSchedule tradingSchedule, int multiplier, Commission commission, double bidAskSpread) {
+        this.contract = contract;
+        contract.multiplier(String.valueOf(multiplier));
+        this.tradingSchedule = tradingSchedule;
+        performanceManager = new PerformanceManager(this, multiplier, commission);
+        positionManager = new PositionManager(this);
+        strategyReportManager = new StrategyReportManager(this);
+        marketBook = dispatcher.getTrader().getAssistant().createMarketBook(this);
+        this.bidAskSpread = bidAskSpread;
+    }
+
+    public MarketBook getMarketBook() {
+        return marketBook;
+    }
+
+    public void setMarketBook(MarketBook marketBook) {
+        this.marketBook = marketBook;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void disable() {
+        isDisabled = true;
+    }
+
+    public String getSymbol() {
+        String symbol = contract.symbol();
+        if (contract.currency() != null) {
+            symbol += "." + contract.currency();
+        }
+        return symbol;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void processInstant(boolean isInSchedule) {
+        if (isInSchedule) {
+            if (dispatcher.getMode() == Mode.ForceClose) {
+                closePosition();
+            } else if (indicatorManager.hasValidIndicators()) {
+                onBookSnapshot();
+            }
+            if (!isDisabled) {
+                positionManager.trade();
+            }
+        } else {
+            closePosition(); // force flat position
+        }
+    }
+
+    public void process() {
+        if (!marketBook.isEmpty()) {
+            indicatorManager.updateIndicators();
+            MarketSnapshot marketSnapshot = marketBook.getSnapshot();
+            long instant = marketSnapshot.getTime();
+            processInstant(tradingSchedule.contains(instant));
+            performanceManager.updatePositionValue(marketSnapshot.getPrice(), positionManager.getCurrentPosition());
+            dispatcher.fireModelChanged(Event.StrategyUpdate, this);
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ").append(name).append(" [");
+        sb.append(contract.symbol()).append("-");
+        sb.append(contract.getSecType()).append("-");
+        sb.append(contract.exchange()).append("]");
+
+        return sb.toString();
+    }
+
+    public int compareTo(Strategy other) {
+        return name.compareTo(other.name);
+    }
+
 }

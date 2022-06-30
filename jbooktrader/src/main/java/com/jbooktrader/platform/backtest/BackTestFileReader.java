@@ -1,47 +1,49 @@
 package com.jbooktrader.platform.backtest;
 
-import com.jbooktrader.platform.marketbar.Snapshot;
-import com.jbooktrader.platform.marketbook.MarketSnapshot;
-import com.jbooktrader.platform.marketbook.SnapshotFilter;
-import com.jbooktrader.platform.model.JBookTraderException;
+import com.jbooktrader.platform.marketbook.*;
+import com.jbooktrader.platform.model.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.*;
+import java.text.*;
 import java.util.*;
 
 /**
- * Base class for all back-test data file readers.
+ * Reads and validates a data file containing historical market depth records.
+ * The data file is used for back testing and optimization of trading strategies.
+ *
+ * @author Eugene Kononov
  */
-public abstract class BackTestFileReader {
-
+public class BackTestFileReader {
+    public static final int COLUMNS = 5;
+    public static final String COLUMN_HEADERS="date,time,balance,price,volume";
     private static final String LINE_SEP = System.getProperty("line.separator");
-    protected BufferedReader reader;
-    protected SnapshotFilter filter;
-    protected long fileSize;
-    protected long previousTime, time;
-    protected SimpleDateFormat sdf;
-    protected final static Map<String, List<Snapshot>> cache = new HashMap<>();
-    protected String cacheKey;
+    private final BufferedReader reader;
+    private final MarketSnapshotFilter filter;
+    private final long fileSize;
+    private long previousTime, time;
+    private SimpleDateFormat sdf;
+    private String previousDateTimeWithoutSeconds;
+    private final static Map<String, List<MarketSnapshot>> cache = new HashMap<>();
+    private String cacheKey;
 
-    /**
-     * The names of the data columns in the order they appear in the file
-     * @return the data column names
-     */
-    abstract List<String> getColumnHeaders();
+    public BackTestFileReader(String fileName, MarketSnapshotFilter filter) throws JBookTraderException {
+        this.filter = filter;
+        previousDateTimeWithoutSeconds = "";
 
-    /**
-     * Turns a line in the file into a snapshot
-     * @param line the line of the data file
-     * @return a Snapshot representing the line
-     * @throws JBookTraderException if there's an unrecoverable error
-     * @throws ParseException if there's an error parsing the date or time
-     */
-    abstract Snapshot toSnapshot(String line) throws JBookTraderException, ParseException;
+        cacheKey = fileName;
+        if (filter != null) {
+            cacheKey += "," + filter.toString();
+        }
 
+        try {
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+            fileSize = new File(fileName).length();
+        } catch (FileNotFoundException fnf) {
+            throw new JBookTraderException("Could not find file: " + fileName);
+        }
+    }
 
-    protected void setTimeZone(String line) throws JBookTraderException {
+    private void setTimeZone(String line) throws JBookTraderException {
         String timeZone = line.substring(line.indexOf('=') + 1);
         TimeZone tz = TimeZone.getTimeZone(timeZone);
         if (!tz.getID().equals(timeZone)) {
@@ -55,17 +57,18 @@ public abstract class BackTestFileReader {
         sdf.setTimeZone(tz);
     }
 
-    public List<Snapshot> load(ProgressListener progressListener) throws JBookTraderException {
+    public List<MarketSnapshot> load(ProgressListener progressListener) throws JBookTraderException {
 
         if (cache.containsKey(cacheKey)) {
             return cache.get(cacheKey);
         }
 
+
         String line = "";
         int lineSeparatorSize = System.getProperty("line.separator").length();
         long sizeRead = 0, lineNumber = 0;
 
-        List<Snapshot> snapshots = new ArrayList<>();
+        List<MarketSnapshot> snapshots = new ArrayList<>();
 
         try {
             while ((line = reader.readLine()) != null) {
@@ -80,9 +83,9 @@ public abstract class BackTestFileReader {
                 boolean isComment = line.startsWith("#");
                 boolean isProperty = line.contains("=");
                 boolean isBlankLine = (line.trim().length() == 0);
-                boolean isSnapshotLine = !(isComment || isProperty || isBlankLine);
-                if (isSnapshotLine) {
-                    Snapshot marketSnapshot = toSnapshot(line);
+                boolean isMarketDepthLine = !(isComment || isProperty || isBlankLine);
+                if (isMarketDepthLine) {
+                    MarketSnapshot marketSnapshot = toMarketDepth(line);
                     if (filter == null || filter.contains(time)) {
                         snapshots.add(marketSnapshot);
                     }
@@ -118,7 +121,40 @@ public abstract class BackTestFileReader {
 
     }
 
-    protected List<String> fastSplit(String s) {
+    private MarketSnapshot toMarketDepth(String line) throws JBookTraderException, ParseException {
+        List<String> tokens = fastSplit(line);
+
+        if (tokens.size() != COLUMNS) {
+            String msg = "The line should contain exactly " + COLUMNS + " comma-separated " +
+                    "columns ("+COLUMN_HEADERS+"). Found " + tokens.size() + " columns";
+            throw new JBookTraderException(msg);
+        }
+
+        String dateTime = tokens.get(0) + tokens.get(1);
+        String dateTimeWithoutSeconds = dateTime.substring(0, 10);
+
+        if (dateTimeWithoutSeconds.equals(previousDateTimeWithoutSeconds)) {
+            // only seconds need to be set
+            int milliSeconds = 1000 * Integer.parseInt(dateTime.substring(10));
+            long previousMilliSeconds = previousTime % 60000;
+            time = previousTime + (milliSeconds - previousMilliSeconds);
+        } else {
+            time = sdf.parse(dateTime).getTime();
+            previousDateTimeWithoutSeconds = dateTimeWithoutSeconds;
+        }
+
+        if (time <= previousTime) {
+            String msg = "Timestamp of this line is before or the same as the timestamp of the previous line.";
+            throw new JBookTraderException(msg);
+        }
+
+        double balance = Double.parseDouble(tokens.get(2));
+        double price = Double.parseDouble(tokens.get(3));
+        int volume = Integer.parseInt(tokens.get(4));
+        return new MarketSnapshot(time, balance, price, volume);
+    }
+
+    private List<String> fastSplit(String s) {
         ArrayList<String> tokens = new ArrayList<>();
         int index, lastIndex = 0;
         while ((index = s.indexOf(',', lastIndex)) != -1) {
@@ -127,15 +163,6 @@ public abstract class BackTestFileReader {
         }
         tokens.add(s.substring(lastIndex));
         return tokens;
-    }
-
-    protected String join(Collection<String> collection, String delimiter){
-        StringBuilder sb = new StringBuilder();
-        for(String s: collection){
-            sb.append(s).append(delimiter);
-        }
-        sb.deleteCharAt(sb.length()-1);
-        return sb.toString();
     }
 
 }

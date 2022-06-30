@@ -156,8 +156,7 @@ public class PerformanceManager {
     }
 
     public void updateOnTrade(int quantity, double avgFillPrice, int position) {
-        long snapshotTime = strategy.getMarket().getSnapshot().getTime();
-
+        long snapshotTime = strategy.getMarketBook().getSnapshot().getTime();
         if (position != 0) {
             if (timeInMarketStart == 0) {
                 timeInMarketStart = snapshotTime;

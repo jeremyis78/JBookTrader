@@ -82,9 +82,7 @@ public class StrategyReportManager {
         Mode mode = Dispatcher.getInstance().getMode();
         boolean useNTPTime = (mode == Mode.ForwardTest || mode == Mode.Trade || mode == Mode.ForceClose);
 
-        long now = useNTPTime
-                ? Dispatcher.getInstance().getNTPClock().getTime()
-                : strategy.getMarket().getSnapshot().getTime();
+        long now = useNTPTime ? Dispatcher.getInstance().getNTPClock().getTime() : strategy.getMarketBook().getSnapshot().getTime();
         String date = dateFormat.format(now);
         String time = timeFormat.format(now);
         strategyReport.report(strategyReportColumns, date, time);

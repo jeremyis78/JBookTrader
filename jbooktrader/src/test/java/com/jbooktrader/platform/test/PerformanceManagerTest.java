@@ -18,9 +18,9 @@ import static org.junit.Assert.*;
  */
 public class PerformanceManagerTest {
 
-    private class DummyBookStrategy extends BookStrategy {
+    private class DummyStrategy extends Strategy {
 
-        protected DummyBookStrategy(StrategyParams params) throws JBookTraderException {
+        protected DummyStrategy(StrategyParams params) throws JBookTraderException {
             super(params);
 
             Contract contract = ContractFactory.makeFutureContract("ES", "GLOBEX");
@@ -55,7 +55,7 @@ public class PerformanceManagerTest {
     @Test
     public void testUpdateOnTrade() throws JBookTraderException {
         int trades = 0;
-        DummyBookStrategy strategy = new DummyBookStrategy(new StrategyParams());
+        DummyStrategy strategy = new DummyStrategy(new StrategyParams());
         PerformanceManager pm = strategy.getPerformanceManager();
         assertEquals(trades, pm.getTrades());
 

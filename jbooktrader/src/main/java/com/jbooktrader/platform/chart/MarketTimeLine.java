@@ -15,9 +15,9 @@ public class MarketTimeLine {
      */
     private static final long MAX_GAP = 12 * 60 * 60 * 1000;// 12 hours
     private static final long SEGMENT_SIZE = SegmentedTimeline.HOUR_SEGMENT_SIZE;
-    private final BookStrategy strategy;
+    private final Strategy strategy;
 
-    public MarketTimeLine(BookStrategy strategy) {
+    public MarketTimeLine(Strategy strategy) {
         this.strategy = strategy;
     }
 

@@ -1,8 +1,6 @@
 package com.jbooktrader.platform.optimizer;
 
 import com.jbooktrader.platform.indicator.*;
-import com.jbooktrader.platform.marketbar.MarketData;
-import com.jbooktrader.platform.marketbar.Snapshot;
 import com.jbooktrader.platform.marketbook.*;
 import com.jbooktrader.platform.model.*;
 import com.jbooktrader.platform.performance.*;
@@ -28,14 +26,14 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
     }
 
     public List<OptimizationResult> call() throws JBookTraderException {
-        List<BookStrategy> strategies = new ArrayList<>();
+        List<Strategy> strategies = new ArrayList<>();
         List<OptimizationResult> optimizationResults = new LinkedList<>();
 
         MarketBook marketBook = new MarketBook();
         IndicatorManager indicatorManager = new IndicatorManager();
 
         for (StrategyParams params : tasks) {
-            BookStrategy strategy = optimizerRunner.getStrategyInstance(params);
+            Strategy strategy = optimizerRunner.getStrategyInstance(params);
             strategy.setMarketBook(marketBook);
             strategy.setIndicatorManager(indicatorManager);
             strategy.setIndicators();
@@ -45,20 +43,19 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
         TradingSchedule tradingSchedule = strategies.get(0).getTradingSchedule();
         int strategiesCount = strategies.size();
 
-        List<Snapshot> snapshots = optimizerRunner.getSnapshots();
+        List<MarketSnapshot> snapshots = optimizerRunner.getSnapshots();
         long snapshotsCount = snapshots.size();
         for (int count = 0; count < snapshotsCount; count++) {
-            Snapshot marketSnapshot = snapshots.get(count);
+            MarketSnapshot marketSnapshot = snapshots.get(count);
             marketBook.setSnapshot(marketSnapshot);
-
+            indicatorManager.updateIndicators();
             boolean isInSchedule = tradingSchedule.contains(marketSnapshot.getTime());
             if (count < snapshotsCount - 1) {
                 // ekk-needs optimization
                 isInSchedule = isInSchedule && !marketBook.isGapping(snapshots.get(count + 1));
             }
 
-            for (BookStrategy strategy : strategies) {
-                indicatorManager.updateIndicators(strategy);
+            for (Strategy strategy : strategies) {
                 strategy.processInstant(isInSchedule);
             }
 
@@ -74,7 +71,7 @@ public class OptimizerWorker implements Callable<List<OptimizationResult>> {
         if (!optimizerRunner.isCancelled()) {
             int minTrades = optimizerRunner.getMinTrades();
 
-            for (BookStrategy strategy : strategies) {
+            for (Strategy strategy : strategies) {
                 strategy.closePosition();
 
                 PerformanceManager performanceManager = strategy.getPerformanceManager();

@@ -37,7 +37,7 @@ public class PortfolioManager {
         }
 
         int openPositions = 0;
-        for (Strategy s : traderAssistant.getBookStrategies()) {
+        for (Strategy s : traderAssistant.getAllStrategies()) {
             int position = s.getPositionManager().getCurrentPosition();
             if (position != 0) {
                 openPositions++;
